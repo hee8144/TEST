@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script
+            src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <link rel="stylesheet" href="reset.css">
+        <style></style>
+    </head>
+    <body>
+        <div id="app">
+            <!-- html 코드는 id가 app인 태그안에서 작업 -->
+            <div class="wrap">
+                <section>
+                    <div>
+                        <label>
+                            <input type="radio" value="P" v-model="athority">환자
+                            <input type="radio" value="D" v-model="athority">의사
+                        </label>
+                    </div>
+                    <div>
+                        <label for="">
+                            아이디: <input type="text" v-model="userId" />
+                        </label>
+                        <button @click="fnCheck">중복체크</button>
+                        <input type="text" v-model="check" hidden>
+                    </div>
+                    <div>
+                        <label for="">
+                            이메일: <input type="email" v-model="email" />
+                        </label>
+                    </div>
+                    <div>
+                        <label for="">
+                            비밀번호: <input type="password" v-model="password" />
+                        </label>
+                    </div>
+                    <div>
+                         <label for="">
+                            비밀번호확인: <input type="password" v-model="checkPwd" />
+                        </label>
+                    </div>
+                    <div>
+                        <label for="">
+                            이름: <input type="text" v-model="name" />
+                        </label>
+                    </div>
+                    <div>
+                        <label for="">
+                            생년월일: <input type="date" v-model="birth" />
+                        </label>
+                    </div>
+                    <div>
+                        휴대폰번호:
+                        <select v-model="phone1">
+                            <option value="010">010</option>
+                            <option value="011">011</option>
+                            <option value="012">012</option>
+                        </select>
+                        -
+                        <input type="number" v-model="phone2" />
+                        -
+                        <input type="number" v-model="phone3" />
+                    </div>
+                    <div>
+                        <label for="">
+                            성별: <input type="radio" value="M" v-model="gender" />남자
+                            <input type="radio" value="F" v-model="gender" />여자
+                        </label>
+                    </div>
+                    <div>
+                        <input type="button" value="가입" @click="fnList" />
+                    </div>
+
+                    
+                </section>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                userId: "",
+                email: "",
+                password: "",
+                name: "",
+                birth: "",
+                phone: "",
+                phone1: "010",
+                phone2: "",
+                phone3: "",
+                gender: "M",
+                athority:"P",
+                checkPwd : "",
+                check:false,
+                regex : /^(?=.*[^\w\s])(?=\S{8}).+$/,
+
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnList: function () {
+                let self = this;
+                let param = {
+                    userId: self.userId,
+                    email: self.email,
+                    password: self.password,
+                    name: self.name,
+                    birth: self.birth,
+                    phone: `${self.phone1}-${self.phone2}-${self.phone3}`,
+                    gender: self.gender,
+                    athority: self.athority
+                };
+                if(self.athority ==""){
+                    alert("회원가입 종류를 선택해주세요");
+                    return;
+                }
+                if(self.userId =="" || self.userId.length <4){
+                    alert("아이디는 4자리 이상 입니다.")
+                    return;
+                }
+                if(self.check!=true){
+                    alert("아이디 중복체크 확인바랍니다.");
+                    return;
+                }
+                if(self.email == ""){
+                    alert("이메일을 입력해주세요.");
+                    return;
+                }
+                if(!self.regex.test(self.password)){
+                    alert("비밀번호는 8자리 이상 , 특수문자 1개가 포함되어야합니다.");
+                    return;
+                }
+                if(self.password != self.checkPwd){
+                    alert("비밀번호가 일치하지 않습니다.");
+                    return;
+                }
+                if(self.name ==""){
+                    alert("이름을 입력해주세요.");
+                    return;
+                }
+                if(self.birth==""){
+                    alert("생년월일을 입력해주세요");
+                    return;
+                }
+                if(self.phone1 == "" || self.phone2 =="" || self.phone3==""){
+                    alert("번호를 다 입력해주세요");
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:3009/user/insert",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                    
+                    }
+                });
+            },
+            fnJoin() {
+                let self = this;
+            },
+            fnCheck(){
+               let self = this;
+               if(self.userId =="" || self.userId.length <4){
+                    alert("아이디는 4자리 이상 입니다.")
+                    return;
+                }
+                $.ajax({
+                    url: "http://localhost:3009/user/check",
+                    dataType: "json",
+                    type: "GET",
+                    data: {userId : self.userId},
+                    success: function (data) {
+                        console.log(self.check);
+                        
+                        if(data.list.length ==0){
+                            self.check=true;
+                            alert("사용가능한 아이디입니다.")
+                        }else{
+                            self.check=false;
+                            alert("사용중인 아이디입니다.")
+                        }
+                        
+                    }
+                });
+            }
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+        },
+    });
+
+    app.mount("#app");
+</script>

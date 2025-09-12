@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script
+            src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <link rel="stylesheet" href="reset.css" />
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
+        <style>
+            #calendar{
+                max-width: 800px;
+                height: 600px;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <!-- html 코드는 id가 app인 태그안에서 작업 -->
+            <div id="calendar"@dateClick=dateClick()></div>
+        </div>
+    </body>
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnList: function () {
+                let self = this;
+                let param = {};
+                $.ajax({
+                    url: "http://localhost:3009/",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {},
+                });
+            },
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            document.addEventListener("DOMContentLoaded", function () {
+                var calendarEl = document.getElementById("calendar");
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: "dayGridMonth",
+                    selectable:true,
+                    weekends:false,
+                    dateClick(info){
+                        window.open(`reserve-view.html?date=${info.dateStr}`,"reserve","width=400","height=400");
+                        
+                    }
+                    
+                });
+                calendar.render();
+            });
+        },
+    });
+
+    app.mount("#app");
+</script>
