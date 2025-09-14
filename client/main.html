@@ -1,100 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-        <script
-            src="https://code.jquery.com/jquery-3.7.1.js"
-            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-            crossorigin="anonymous"
-        ></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link rel="stylesheet" href="reset.css">
-        <style>
-            .header-wrap{
-                background-color: antiquewhite;
-            }
-            header{
-                max-width: 1140px;
-                line-height: 50px;
-                margin: 0 auto;
-            }
-            header nav ul{
-                display: flex;
-                justify-content: space-between;
-                padding: 10px;
-            }
-            header nav ul li{
-                padding: 10px;
-            }
-
-        </style>
-    </head>
-    <body>
-        <div id="app">
-            <!-- html 코드는 id가 app인 태그안에서 작업 -->
-            <div class="header-wrap">
-                <header>
-                    <nav>
-                        <ul>
-                            <li>
-                                <h1> <a href="javascript:;">logo</a></h1>
-                            </li>
-                            <li>
-                                <a href="reserve.html">예약하기</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">예약확인</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">HOME</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">찾아오시는길</a>
-                            </li>
-                            <li>
-                                <a href="login.html" >로그인</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </header>
-            </div>
-        </div>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+      .header-wrap {
+        background-color: antiquewhite;
+      }
+      header {
+        max-width: 1140px;
+        line-height: 50px;
+        margin: 0 auto;
+      }
+      header nav ul {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+      }
+      header nav ul li {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+      <div class="header-wrap">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <h1><a href="javascript:;">logo</a></h1>
+              </li>
+              <li>
+                <a href="reserve.html">예약하기</a>
+              </li>
+              <li>
+                <a href="checkReserve.html">예약확인</a>
+              </li>
+              <li>
+                `
+                <a href="javascript:;">HOME</a>
+              </li>
+              <li>
+                <a href="javascript:;">찾아오시는길</a>
+              </li>
+              <li>
+                <a href="login.html">로그인</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+      </div>
+    </div>
+  </body>
 </html>
 
 <script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                // 변수 - (key : value)
-            };
-        },
-        methods: {
-            // 함수(메소드) - (key : function())
-            fnList: function () {
-                let self = this;
-                let param = {};
-                $.ajax({
-                    url: "http://localhost:3009/",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {},
-                });
-            },
-        }, // methods
-        mounted() {
-            // 처음 시작할 때 실행되는 부분
-            let self = this;
-            let userName =sessionStorage.getItem("name");
-            let userStatus =sessionStorage.getItem("athority");
-            if(userName!=null){
-                alert(`${userName} 님 환영합니다.`)
-            }
-        },
-    });
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnList: function () {
+        let self = this;
+        let param = {};
+        $.ajax({
+          url: "http://localhost:3009/",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {},
+        });
+      },
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      let userName = sessionStorage.getItem("name");
+      let userStatus = sessionStorage.getItem("athority");
+      if (userName != null) {
+        alert(`${userName} 님 환영합니다.`);
+      }
+    },
+  });
 
-    app.mount("#app");
+  app.mount("#app");
 </script>

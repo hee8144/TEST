@@ -11,12 +11,30 @@
     ></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="reset.css" />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
     <style>
-      #calendar {
-        max-width: 800px;
-        height: 600px;
-        margin: 0 auto;
+      #app {
+        width: 600px;
+        margin: 30px auto;
+      }
+      table,
+      tr,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: center;
+      }
+      th {
+        width: 150px;
+        background-color: beige;
+      }
+      td {
+        width: 300px;
+        text-align: left;
+      }
+      .check-btn {
+        margin-left: 15px;
       }
       .header-wrap {
         background-color: antiquewhite;
@@ -38,6 +56,7 @@
   </head>
   <body>
     <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
       <div class="header-wrap">
         <header>
           <nav>
@@ -66,8 +85,23 @@
         </header>
       </div>
 
-      <!-- html 코드는 id가 app인 태그안에서 작업 -->
-      <div id="calendar"></div>
+      <table>
+        <tr>
+          <th>담당의사</th>
+          <th>예약신청시간</th>
+          <th>시작시간</th>
+          <th>이름</th>
+          <th>상태</th>
+          <th>삭제</th>
+        </tr>
+        <tr v-for="list in reserveList">
+          <td>{{list.DOCTORNAME}}</td>
+          <td>{{list.RDATE}}</td>
+          <td>{{list.STIME}}</td>
+          <td>{{list.USERID}}</td>
+          <td>{{list.STATUS}}</td>
+        </tr>
+      </table>
     </div>
   </body>
 </html>
@@ -77,26 +111,15 @@
     data() {
       return {
         // 변수 - (key : value)
-        calendar: null,
         userId: "",
+        reserveList: [],
       };
     },
     methods: {
       // 함수(메소드) - (key : function())
       fnList: function () {
         let self = this;
-        let param = {};
-        $.ajax({
-          url: "http://localhost:3009/",
-          dataType: "json",
-          type: "GET",
-          data: param,
-          success: function (data) {},
-        });
-      },
-      fnReserveList() {
-        let self = this;
-        let param = {};
+        let param = { userId: self.userId };
         $.ajax({
           url: "http://localhost:3009/reserve/list",
           dataType: "json",
@@ -104,30 +127,7 @@
           data: param,
           success: function (data) {
             console.log(data.list);
-
-            data.list.forEach((ev) => {
-              let start = new Date(ev.START_TIME);
-              let hour = start.getHours();
-              let bgColor = "";
-              let txColor = "";
-              if (ev.USERID == self.userId) {
-                bgColor = "light";
-                txColor = "white";
-              } else {
-                bgColor = "white";
-                txColor = "black";
-              }
-              self.calendar.addEvent({
-                title: `${hour}시 예약 : ${ev.USERID.trim()}`,
-                start: start,
-                end: new Date(ev.END_TIME),
-                allDay: false,
-                display: "block",
-                borderColor: "white",
-                backgroundColor: bgColor,
-                textColor: txColor,
-              });
-            });
+            self.reserveList = data.list;
           },
         });
       },
@@ -136,21 +136,7 @@
       // 처음 시작할 때 실행되는 부분
       let self = this;
       self.userId = sessionStorage.getItem("userId");
-      document.addEventListener("DOMContentLoaded", function () {
-        var calendarEl = document.getElementById("calendar");
-        self.calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: "dayGridMonth",
-          selectable: true,
-          weekends: false,
-          displayEventTime: false,
-          dateClick(info) {
-            window.open(`reserve-view.html?date=${info.dateStr}`, "reserve", "width=400,height=400");
-          },
-        });
-
-        self.calendar.render();
-        self.fnReserveList();
-      });
+      self.fnList();
     },
   });
 
