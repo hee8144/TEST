@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style></style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+      <div>
+        <label for=""> 예약일자 : <input type="date" v-model="reserveList.RDATE" /> </label>
+      </div>
+      <div>
+        <label for=""> 사용자아이디 : {{reserveList.USERID}} </label>
+      </div>
+      <div>
+        <label for="">
+          담당의사 :
+          <select v-model="reserveList.DOCTORNAME">
+            <option value="">의사 선택</option>
+            <option v-for="doc in doctorList" :value="doc.NAME">{{ doc.NAME }}</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label for="">
+          예약시간 :
+          <select name="" v-model="reserveList.START_TIME">
+            <option value="9">09~10</option>
+            <option value="10">10~11</option>
+            <option value="11">11~12</option>
+            <option value="13">13~14</option>
+            <option value="14">14~15</option>
+            <option value="15">15~16</option>
+            <option value="16">16~17</option>
+            <option value="17">17~18</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label for=""> 상태 : <textarea v-model="reserveList.STATUS"></textarea></label>
+      </div>
+      <button @click="fnEdit" >예약하기</button>
+    </div>
+  </body>
+</html>
+
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        doctorList: [],
+        reserveNo:"",
+        reserveList:{}
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      
+      fnDoctorList() {
+        let self = this;
+        $.ajax({
+          url: "http://localhost:3009/doctor/list",
+          dataType: "json",
+          type: "GET",
+          data: {},
+          success: function (data) {
+            self.doctorList = data.list;
+            console.log(self.doctorList);
+          },
+        });
+      },
+      fnReserveList(){
+        let self = this;
+        let param = { reserveNo: self.reserveNo };
+        $.ajax({
+          url: "http://localhost:3009/reserve/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            self.reserveList = data.list[0];
+            console.log(data.list[0]);
+            self.reserveList.START_TIME= data.list[0].STIME.substr(0,2);
+          },
+        });
+      },
+      fnEdit(){
+        let self = this;
+        console.log(self.reserveList.STATUS);
+        
+        $.ajax({
+          url: "http://localhost:3009/reserve/edit",
+          dataType: "json",
+          type: "GET",
+          data: {
+            reserveNo : self.reserveNo,
+            REDATE : self.reserveList.REDATE.substr(0,10),
+            USERID : self.reserveList.USERID, 
+            STATUS: self.reserveList.STATUS , 
+            DOCTORNAME : self.reserveList.DOCTORNAME, 
+            START_TIME :self.reserveList.REDATE.substr(0,10) + " " + self.reserveList.START_TIME+ ":00", 
+            END_TIME:self.reserveList.REDATE.substr(0,10) + " " + String(Number(self.reserveList.START_TIME)+1)+ ":00",
+          },
+          success: function (data) {
+            alert("수정되었습니다.");
+            location.href="checkReserve.html";
+          },
+        });
+      }
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+       let queryParams = new URLSearchParams(window.location.search);
+      self.reserveNo = queryParams.get("reserveNo") || "";
+      self.fnDoctorList();
+      self.fnReserveList()
+    },
+  });
+
+  app.mount("#app");
+</script>

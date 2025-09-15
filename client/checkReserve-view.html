@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style></style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+       <div>
+        <label for=""> 예약번호 : {{info.RESERVENO}}</label>
+      </div>
+      <div>
+        <label for=""> 사용자아이디 : {{info.USERID}} </label>
+      </div>
+      <div>
+        <label for="">담당의사 : {{info.DOCTORNAME}} </label>
+      </div>
+      <div>
+        <label for=""> 증상 :  {{info.STATUS}}</label>
+      </div>
+      <div>
+        <label for=""> 진단 : <textarea v-model="diagnosis"></textarea></label>
+      </div>
+      <div>
+        <label for=""> 처방 : <textarea v-model="prescription"></textarea></label>
+      </div>
+      <div>
+        <button @click="fnWrite">작성하기</button>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        info:{},
+        reserveNo:"",
+        diagnosis:"",
+        prescription:""
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnList: function () {
+        let self = this;
+        let param = {reserveNo : self.reserveNo};
+        $.ajax({
+          url: "http://localhost:3009/reserve/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            self.info = data.list[0]
+          },
+        });
+      },
+      fnWrite(){
+        let self = this;
+         let param = {
+            reserveNo : self.info.RESERVENO,
+            userId:self.info.USERID,
+            doctorName:self.info.DOCTORNAME,
+            symptoms:self.info.STATUS,
+            diagnosis:self.diagnosis,
+            prescription:self.prescription
+         };
+
+         console.log(1);
+         
+        $.ajax({
+          url: "http://localhost:3009/solution",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            alert("작성되었습니다.");
+            window.close();
+            window.opener.location.reload();
+          },
+        });
+      }
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+       let queryParams = new URLSearchParams(window.location.search);
+      self.reserveNo = queryParams.get("reserveNo") || "";
+      self.fnList();
+    },
+  });
+
+  app.mount("#app");
+</script>

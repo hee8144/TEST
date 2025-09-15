@@ -1,94 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="reset.css">
-    <style>
-        
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" href="reset.css" />
+    <style></style>
+  </head>
+  <body>
     <div id="app">
-        <!-- html 코드는 id가 app인 태그안에서 작업 -->
-        <div>
-            <label for="">
-                예약일자 : <input type="date" v-model="date">
-            </label>
-        </div>
-        <div>
-            <label for="">
-                사용자아이디 : <input type="text" v-model="userId">
-            </label>
-        </div>
-        <div>
-            <label for="">
-                담당의사 : <select name="" id="doctor">
-                    <option value="">홍길동</option>
-                </select>
-            </label>
-        </div>
-        <div>
-            <label for="">
-                예약시간 : <select name="" id="time">
-                    <option value="09">09~10</option>
-                    <option value="10">10~11</option>
-                    <option value="11">11~12</option>
-                    <option value="13">13~14</option>
-                    <option value="14">14~15</option>
-                    <option value="15">14~15</option>
-                    <option value="16">16~17</option>
-                    <option value="17">17~18</option>
-                </select>
-            </label>
-        </div>
-        <div>
-            <label for="">
-                상태 : <textarea name="" id=""></textarea>
-            </label>
-        </div>            
-        <button>예약하기</button>
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+      <div>
+        <label for=""> 예약일자 : <input type="date" v-model="redate" /> </label>
+      </div>
+      <div>
+        <label for=""> 사용자아이디 : {{userId}} </label>
+      </div>
+      <div>
+        <label for="">
+          담당의사 :
+          <select v-model="doctorName">
+            <option value="">의사 선택</option>
+            <option v-for="doc in doctorList" :key="doc.NAME" :value="doc.NAME">{{ doc.NAME }}</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label for="">
+          예약시간 :
+          <select name="" v-model="start_time">
+            <option value="9">09~10</option>
+            <option value="10">10~11</option>
+            <option value="11">11~12</option>
+            <option value="13">13~14</option>
+            <option value="14">14~15</option>
+            <option value="15">15~16</option>
+            <option value="16">16~17</option>
+            <option value="17">17~18</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label for=""> 상태 : <textarea v-model="status"></textarea></label>
+      </div>
+      <button @click="fnReserve">예약하기</button>
     </div>
-</body>
+  </body>
 </html>
 
 <script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                // 변수 - (key : value)
-                date:"",
-                userId:""
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        redate: "",
+        userId: "",
+        doctorName: "",
+        start_time: "",
+        end_time: "",
+        status: "",
+        doctorList: [],
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnReserve: function () {
+        let self = this;
+        let endHour = String(parseInt(self.start_time) + 1).padStart(2, "0");
+        console.log(self.redate + " " + endHour + ":00");
 
-            };
-        },
-        methods: {
-            // 함수(메소드) - (key : function())
-            fnList: function () {
-                let self = this;
-                let param={};
-                $.ajax({
-                    url: "http://localhost:3009/",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
+        let startDateTime = self.redate + " " + self.start_time.padStart(2, "0") + ":00";
+        let endDateTime = self.redate + " " + endHour + ":00";
+        let param = {
+          userId: self.userId,
+          doctorName: self.doctorName,
+          redate: self.redate,
+          start_time: startDateTime,
+          end_time: endDateTime,
+          status: self.status,
+        };
 
-                    }
-                });
-            }
-        }, // methods
-        mounted() {
-            // 처음 시작할 때 실행되는 부분
-            let self = this;
-            let queryParams = new URLSearchParams(window.location.search);
-            self.date = queryParams.get("date") || "";  
-            self.userId = sessionStorage.getItem('userId');
+        if (!self.redate || !self.userId || !self.doctorName || !self.start_time) {
+          alert("필수 정보를 입력해주세요.");
+          return;
         }
-    });
+        $.ajax({
+          url: "http://localhost:3009/reserve/insert",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            alert("예약되었습니다.");
+            window.opener.postMessage({ type: "ADD_EVENT", title: "예약", date: self.redate }, "*");
+            window.close();
+            window.opener.location.reload();
+          },
+        });
+      },
+      fnDoctorList() {
+        let self = this;
+        $.ajax({
+          url: "http://localhost:3009/doctor/list",
+          dataType: "json",
+          type: "GET",
+          data: {},
+          success: function (data) {
+            self.doctorList = data.list;
+            console.log(self.doctorList[0].USERID);
+          },
+        });
+      },
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      let queryParams = new URLSearchParams(window.location.search);
+      self.redate = queryParams.get("date") || "";
+      self.userId = sessionStorage.getItem("userId");
+      self.fnDoctorList();
+    },
+  });
 
-    app.mount('#app');
+  app.mount("#app");
 </script>

@@ -12,6 +12,30 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="reset.css" />
     <style>
+        #app {
+        width: 600px;
+        margin: 30px auto;
+      }
+      table,
+      tr,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: center;
+      }
+      th {
+        width: 150px;
+        background-color: beige;
+      }
+      td {
+        width: 300px;
+        text-align: left;
+      }
+      .check-btn {
+        margin-left: 15px;
+      }
       .header-wrap {
         background-color: antiquewhite;
       }
@@ -33,7 +57,6 @@
   <body>
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
-      <div class="header-wrap">
        <header>
           <nav>
             <ul>
@@ -58,6 +81,34 @@
             </ul>
           </nav>
         </header>
+
+      <table>
+        <tr>
+            <th>선택</th>
+            <th>이름</th>
+            <th>아이디</th>
+            <th>비밀번호</th>
+            <th>이메일</th>
+            <th>번호</th>
+            <th>생일</th>
+            <th>성별</th>
+            <th>가입날짜</th>
+        </tr>
+        
+        <tr v-for="item in list">
+            <td><input type="checkbox" :value="item.USERID" v-model="selectItem"></td>
+            <td>{{item.NAME}}</td>
+            <td>{{item.USERID}}</td>
+            <td>{{item.PASSWORD}}</td>
+            <td>{{item.EMAIL}}</td>
+            <td>{{item.PHONE}}</td>
+            <td>{{item.BIRTH}}</td>
+            <td>{{item.GENDER}}</td>
+            <td>{{item.CDATE}}</td>
+        </tr>
+      </table>
+      <div>
+        <button @click="fnUserRemove">삭제</button>
       </div>
     </div>
   </body>
@@ -68,6 +119,8 @@
     data() {
       return {
         // 변수 - (key : value)
+        list:[],
+        selectItem:[]
       };
     },
     methods: {
@@ -76,22 +129,43 @@
         let self = this;
         let param = {};
         $.ajax({
-          url: "http://localhost:3009/",
+          url: "http://localhost:3009/user/list",
           dataType: "json",
           type: "GET",
           data: param,
-          success: function (data) {},
+          success: function (data) {
+            console.log(data.list);
+            self.list = data.list;
+            
+          },
         });
       },
+      fnUserRemove(){
+        let self = this;
+
+        if(!confirm("정말삭제하시겠습니까?")){
+          return;
+        }   
+        
+        console.log(self.selectItem.length);
+        
+        $.ajax({
+          url: "http://localhost:3009/user/delete",
+          dataType: "json",
+          type: "GET",
+          data: {removeList : self.selectItem},
+        traditional:true,
+          success: function (data) {    
+            alert("삭제되었습니다");
+            self.fnList();
+          },
+        });
+      }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분
       let self = this;
-      let userName = sessionStorage.getItem("name");
-      let userStatus = sessionStorage.getItem("athority");
-      if (userName != null) {
-        alert(`${userName} 님 환영합니다.`);
-      }
+      self.fnList();
     },
   });
 
