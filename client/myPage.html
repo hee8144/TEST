@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+    .header-wrap {
+        background-color: antiquewhite;
+      }
+      header {
+        max-width: 1140px;
+        line-height: 50px;
+        margin: 0 auto;
+      }
+      header nav ul {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+      }
+      header nav ul li {
+        padding: 10px;
+      }
+       #app {
+        width: 800px;
+        margin: 30px auto;
+      }
+      table,
+      tr,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: center;
+      }
+      th {
+        width: 150px;
+        background-color: beige;
+      }
+      td {
+        width: 300px;
+        text-align: left;
+      }
+      .check-btn {
+        margin-left: 15px;
+      }
+      </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+        <div class="header-wrap">
+       <header>
+          <nav>
+            <ul>
+              <li>
+                <h1><a href="javascript:;">logo</a></h1>
+              </li>
+              <li>
+                <a href="reserve.html">예약하기</a>
+              </li>
+              <li>
+                <a href="checkReserve.html">예약확인</a>
+              </li>
+              <li>
+                <a href="main.html">HOME</a>
+              </li>
+              <li >
+                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                <a v-else href="myPage.html">마이페이지</a>
+              </li>
+              <li>
+                <a v-if="userAthority==''" href="login.html">로그인</a>
+                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+      </div>
+
+      <div>
+        개인정보
+        <button @click="fnEdit(userId)">수정</button>
+        <table>
+            <tr>
+                <th>이름</th>
+                <th>아이디</th>
+                <th>비밀번호</th>
+                <th>이메일</th>
+                <th>번호</th>
+                <th>생일</th>
+                <th>성별</th>
+                <th>가입날짜</th>
+            </tr>
+            <tr>
+                <td>{{userInfo.NAME}}</td>
+                <td>{{userInfo.USERID}}</td>
+                <td>{{userInfo.PASSWORD}}</td>
+                <td>{{userInfo.EMAIL}}</td>
+                <td>{{userInfo.PHONE}}</td>
+                <td>{{userInfo.BIRTH}}</td>
+                <td>{{userInfo.GENDER}}</td>
+                <td>{{userInfo.CDATE}}</td>
+            </tr>
+        </table>
+      </div>
+
+      <div>
+        예약정보
+        <table>
+             <tr >
+                <th>예약번호</th>
+                <th>담당의사</th>
+                <th>예약신청시간</th>
+                <th>시작시간</th>
+                <th>이름</th>
+                <th>상태</th>
+                <th>진료여부</th>
+            </tr>
+            <tr v-for="list in reserveList">
+                <td>{{list.RESERVENO}}</td>
+                <td>{{list.DOCTORNAME}}</td>
+                <td>{{list.RDATE}}</td>
+                <td>{{list.STIME}}</td>
+                <td>{{list.USERID}}</td>
+                <td>{{list.STATUS}}</td>
+                <td>{{list.SOLUTION}}</td>
+            </tr>
+        </table>
+      </div>
+
+      <div>
+        진료기록
+        <table>
+            <tr>
+                <th>
+                    진료번호
+                </th>
+                <th>
+                    아이디
+                </th>
+                 <th>
+                    담당의사
+                </th>
+                 <th>
+                    증상
+                </th>
+                <th>
+                    진단
+                </th>
+                <th>
+                    처방
+                </th>
+            </tr>
+
+              <tr v-if="recordList.length >0" v-for="item in recordList">
+                <td>{{item.RESERVENO}}</td>
+                <td>{{item.USERID}}</td>
+                <td>{{item.DOCTORID}}</td>
+                <td>{{item.SYMPTOMS}}</td>
+                <td>{{item.DIAGNOSIS}}</td>
+                <td>{{item.PRESCRIPTION}}</td>
+            </tr>
+            <tr v-else>
+                <td>
+                    진료기록이없습니다
+                </td>
+            </tr>
+
+        </table>
+      </div>
+
+    </div>
+  </body>
+</html>
+
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        userId:"",
+        userAthority:"",
+        userName:"",
+        userInfo:{},
+        reserveList:[],
+        recordList:[],
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnUserInfo: function () {
+        let self = this;
+        let param = {userId : self.userId};
+        $.ajax({
+          url: "http://localhost:3009/user/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            console.log(data.list[0]);
+            self.userInfo = data.list[0];
+            
+          },
+        });
+      },
+      fnUserReserve(){
+        let self = this;
+        let param = {userId : self.userId};
+        $.ajax({
+          url: "http://localhost:3009/reserve/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            console.log(data.list);
+            self.reserveList = data.list;
+          },
+        });
+      },
+      fnUserRecord(){
+        let self = this;
+        let param = {userId : self.userId};
+        $.ajax({
+          url: "http://localhost:3009/solution/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            console.log(data.list);
+            self.recordList = data.list;
+            
+          },
+        });
+      },
+      fnLogout(){
+        let self = this;
+        sessionStorage.setItem("name","");
+        sessionStorage.setItem("athority","");
+        location.reload();
+
+      },
+      fnEdit(userId){
+        window.open("myPage-view.html?userId="+userId,"myPage","width=600 , height=400");
+      }
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      self.userName = sessionStorage.getItem("name");
+      self.userAthority = sessionStorage.getItem("athority");
+      self.userId = sessionStorage.getItem("userId");
+      if(self.userAthority == ""){
+        alert("로그인하신뒤 이용가능합니다.")
+        location.href="login.html"
+      }
+      self.fnUserInfo();
+      self.fnUserReserve();
+      self.fnUserRecord();
+    },
+  });
+
+  app.mount("#app");
+</script>

@@ -39,7 +39,7 @@
   <body>
     <div id="app">
       <div class="header-wrap">
-        <header>
+       <header>
           <nav>
             <ul>
               <li>
@@ -52,13 +52,15 @@
                 <a href="checkReserve.html">예약확인</a>
               </li>
               <li>
-                <a href="javascript:;">HOME</a>
+                <a href="main.html">HOME</a>
+              </li>
+              <li >
+                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                <a v-else href="myPage.html">마이페이지</a>
               </li>
               <li>
-                <a href="userManagement.html">회원관리</a>
-              </li>
-              <li>
-                <a href="login.html">로그인</a>
+                <a v-if="userAthority==''" href="login.html">로그인</a>
+                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
               </li>
             </ul>
           </nav>
@@ -78,6 +80,7 @@
         // 변수 - (key : value)
         calendar: null,
         userId: "",
+        userAthority:"",
       };
     },
     methods: {
@@ -130,11 +133,20 @@
           },
         });
       },
+      fnLogout(){
+        let self = this;
+        sessionStorage.setItem("name","");
+        sessionStorage.setItem("athority","");
+        sessionStorage.setItem("userId","")
+        location.reload();
+
+      }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분
       let self = this;
       self.userId = sessionStorage.getItem("userId");
+      self.userAthority = sessionStorage.getItem("athority");
       document.addEventListener("DOMContentLoaded", function () {
         var calendarEl = document.getElementById("calendar");
         self.calendar = new FullCalendar.Calendar(calendarEl, {

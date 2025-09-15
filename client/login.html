@@ -16,6 +16,9 @@
   <body>
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
+       <div>
+         <button @click="fnBack">뒤로가기</button>
+       </div>
       <div>아이디 : <input type="text" v-model="userId" /></div>
       <div>비밀번호 : <input type="password" v-model="pwd" /></div>
       <div>
@@ -64,6 +67,9 @@
           },
         });
       },
+      fnBack(){
+        window.history.back();
+      }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분

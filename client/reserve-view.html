@@ -123,6 +123,10 @@
       let queryParams = new URLSearchParams(window.location.search);
       self.redate = queryParams.get("date") || "";
       self.userId = sessionStorage.getItem("userId");
+      if(self.userId ==""){
+        alert("로그인후 이용해주세요");
+        window.close();
+      }
       self.fnDoctorList();
     },
   });

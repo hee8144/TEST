@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="reset.css" />
     <style>
         #app {
-        width: 600px;
+        width: 800px;
         margin: 30px auto;
       }
       table,
@@ -57,6 +57,7 @@
   <body>
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
+       <div class="header-wrap">
        <header>
           <nav>
             <ul>
@@ -70,17 +71,20 @@
                 <a href="checkReserve.html">예약확인</a>
               </li>
               <li>
-                <a href="javascript:;">HOME</a>
+                <a href="main.html">HOME</a>
               </li>
-              <li>
-                <a href="userManagement.html">회원관리</a>
+              <li >
+                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                <a v-else href="myPage.html">마이페이지</a>
               </li>
-              <li>
-                <a href="login.html">로그인</a>
+              <li>  
+                <a v-if="userAthority==''" href="login.html">로그인</a>
+                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
               </li>
             </ul>
           </nav>
         </header>
+      </div>
 
       <table>
         <tr>
@@ -98,7 +102,11 @@
         <tr v-for="item in list">
             <td><input type="checkbox" :value="item.USERID" v-model="selectItem"></td>
             <td>{{item.NAME}}</td>
-            <td>{{item.USERID}}</td>
+            <td>
+              <a href="javascript:;" @click="fnView(item.USERID , item.NAME)">
+                {{item.USERID}}
+              </a>
+            </td>
             <td>{{item.PASSWORD}}</td>
             <td>{{item.EMAIL}}</td>
             <td>{{item.PHONE}}</td>
@@ -120,7 +128,8 @@
       return {
         // 변수 - (key : value)
         list:[],
-        selectItem:[]
+        selectItem:[],
+        userAthority:""
       };
     },
     methods: {
@@ -160,11 +169,23 @@
             self.fnList();
           },
         });
+      },
+      fnView(userId,name){
+        location.href=`userManagement-view.html?userId=${userId}&NAME=${name}`;
+      },
+      fnLogout(){
+        let self = this;
+        sessionStorage.setItem("name","");
+        sessionStorage.setItem("athority","");
+        sessionStorage.setItem("userId","")
+        location.reload();
+
       }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분
       let self = this;
+      self.userAthority = sessionStorage.getItem("athority");
       self.fnList();
     },
   });

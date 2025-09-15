@@ -47,13 +47,15 @@
                 <a href="checkReserve.html">예약확인</a>
               </li>
               <li>
-                <a href="javascript:;">HOME</a>
+                <a href="main.html">HOME</a>
+              </li>
+              <li >
+                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                <a v-else href="myPage.html">마이페이지</a>
               </li>
               <li>
-                <a href="userManagement.html">회원관리</a>
-              </li>
-              <li>
-                <a href="login.html">로그인</a>
+                <a v-if="userAthority==''" href="login.html">로그인</a>
+                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
               </li>
             </ul>
           </nav>
@@ -68,6 +70,8 @@
     data() {
       return {
         // 변수 - (key : value)
+        userAthority:"",
+        userName:""
       };
     },
     methods: {
@@ -83,14 +87,23 @@
           success: function (data) {},
         });
       },
+      fnLogout(){
+        let self = this;
+        sessionStorage.setItem("name","");
+        sessionStorage.setItem("athority","");
+        sessionStorage.setItem("userId","")
+        location.reload();
+
+      }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분
       let self = this;
-      let userName = sessionStorage.getItem("name");
-      let userStatus = sessionStorage.getItem("athority");
-      if (userName != null) {
-        alert(`${userName} 님 환영합니다.`);
+      self.userAthority = sessionStorage.getItem("athority");
+      self.userName = sessionStorage.getItem("name");
+      
+      if (self.userName != null && self.userName !="") {
+        alert(`${self.userName} 님 환영합니다.`);
       }
     },
   });

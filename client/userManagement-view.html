@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+         #app {
+        width: 600px;
+        margin: 30px auto;
+      }
+      table,
+      tr,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: center;
+      }
+      th {
+        width: 150px;
+        background-color: beige;
+      }
+      td {
+        width: 300px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+
+      <div v-if="list.length == 0">
+        진료기록이없습니다.
+      </div>
+      <div v-else>
+        {{name}}님의 진료기록
+        <table>
+            <tr>
+                <th>
+                    진료번호
+                </th>
+                <th>
+                    아이디
+                </th>
+                 <th>
+                    담당의사
+                </th>
+                 <th>
+                    증상
+                </th>
+                <th>
+                    진단
+                </th>
+                <th>
+                    처방
+                </th>
+            </tr>
+
+            <tr v-for="item in list">
+                <td>{{item.RESERVENO}}</td>
+                <td>{{item.USERID}}</td>
+                <td>{{item.DOCTORID}}</td>
+                <td>{{item.SYMPTOMS}}</td>
+                <td>{{item.DIAGNOSIS}}</td>
+                <td>{{item.PRESCRIPTION}}</td>
+            </tr>
+
+           
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        userId:"",
+        name:"",
+        list:[]
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnList: function () {
+        let self = this;
+        let param = {};
+        $.ajax({
+          url: "http://localhost:3009/solution/list",
+          dataType: "json",
+          type: "GET",
+          data: {userId : self.userId},
+          success: function (data) {
+            console.log(data);
+            self.list=data.list;
+          },
+        });
+      },
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      let queryParams = new URLSearchParams(window.location.search);
+      self.userId = queryParams.get("userId") || "";
+      self.name = queryParams.get("NAME") || "";
+      self.fnList();
+    },
+  });
+
+  app.mount("#app");
+</script>

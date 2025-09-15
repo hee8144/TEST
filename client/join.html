@@ -17,6 +17,9 @@
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
       <div class="wrap">
+        <div>
+         <button @click="fnBack">뒤로가기</button>
+       </div>
         <section>
           <div>
             <label> <input type="radio" value="P" v-model="athority" />환자 <input type="radio" value="D" v-model="athority" />의사 </label>
@@ -174,6 +177,9 @@
           },
         });
       },
+      fnBack(){
+        window.history.back();
+      }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+      table,
+      tr,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: center;
+      }
+      th {
+        width: 150px;
+        background-color: beige;
+      }
+      td {
+        width: 300px;
+        text-align: left;
+      }
+      .check-btn {
+        margin-left: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+       <table>
+          <tr>
+            <th>이름</th>
+            <td>{{userInfo.NAME}}</td>
+          </tr>
+
+          <tr>
+            <th>아이디</th>
+            <td>{{userInfo.USERID}}</td>
+          </tr>
+
+          <tr>
+            <th>비밀번호</th>
+            <td><input type="text" v-model="userInfo.PASSWORD"></td>
+          </tr>
+          
+          <tr>
+            <th>이메일</th>
+            <td><input type="email" v-model="userInfo.EMAIL"></td>
+          </tr>
+
+          <tr>
+            <th>번호</th>
+            <td>
+              <select v-model="phone1">
+                <option value="010">010</option>
+                <option value="011">011</option>
+                <option value="012">012</option>
+              </select>
+              -
+              <input type="number" v-model="phone2" maxlength="4"/>
+              -
+              <input type="number" v-model="phone3" maxlength="4"/>
+            </td>
+          </tr>
+
+          <tr>
+            <th>생일</th>
+            <td><input type="date" v-model="userInfo.BIRTH"></td>
+          </tr>
+
+          <tr>
+            <th>성별</th>
+            <td><input type="radio" value="M" v-model="userInfo.GENDER" />남자 <input type="radio" value="F" v-model="userInfo.GENDER" />여자</td>
+          </tr>
+
+          <tr>
+            <th>가입날짜</th>
+            <td>{{userInfo.CDATE}}</td>
+          </tr>
+       </table>
+
+       <button @click="fnmyPageEdit">수정완료</button>
+    </div>
+  </body>
+</html>
+
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        userId:"",
+        userInfo:{},
+        phone1:"",
+        phone2:"",
+        phone3:"",
+        regex: /^(?=.*[^\w\s])(?=\S{8}).+$/,
+        
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnUserInfo: function () {
+        let self = this;
+        let param = {userId : self.userId};
+        $.ajax({
+          url: "http://localhost:3009/user/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            console.log(data.list[0].PHONE);
+            self.userInfo = data.list[0];
+            self.phone1 = data.list[0].PHONE.substr(0,3);
+            self.phone2 = data.list[0].PHONE.substr(4,4);
+            self.phone3 = data.list[0].PHONE.substr(9,4);
+          },
+        });
+      },
+      fnmyPageEdit(){
+         let self = this;
+        let param = {
+          userId: self.userId,
+          password:self.userInfo.PASSWORD,
+          email:self.userInfo.EMAIL,
+          phone: `${self.phone1}-${self.phone2}-${self.phone3}`,
+          birth:self.userInfo.BIRTH,
+          gender:self.userInfo.GENDER,
+        };
+
+         if (self.userInfo.EMAIL == "") {
+          alert("이메일을 입력해주세요.");
+          return;
+        }
+        if (!self.regex.test(self.userInfo.PASSWORD)) {
+          alert("비밀번호는 8자리 이상 , 특수문자 1개가 포함되어야합니다.");
+          return;
+        }
+
+        if (self.userInfo.NAME == "") {
+          alert("이름을 입력해주세요.");
+          return;
+        }
+        if (self.userInfo.BIRTH == "") {
+          alert("생년월일을 입력해주세요");
+          return;
+        }
+        if (self.phone1 == "" || self.phone2.length < 3 || self.phone3.length < 4) {
+          alert("번호를 다 입력해주세요");
+          return;
+        }
+        $.ajax({
+          url: "http://localhost:3009/user/edit",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            alert("수정완료");
+            window.close();
+            location.reload();
+          },
+        });
+      }
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      let queryParams = new URLSearchParams(window.location.search);
+      self.userId = queryParams.get("userId") || "";
+      self.fnUserInfo();
+    },
+  });
+
+  app.mount("#app");
+</script>
