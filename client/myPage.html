@@ -114,7 +114,7 @@
       </div>
 
       <div>
-        예약정보
+        <h2>예약정보</h2>
         <table>
              <tr >
                 <th>예약번호</th>
@@ -215,6 +215,9 @@
       fnUserReserve(){
         let self = this;
         let param = {userId : self.userId};
+        if(self.userAthority == 'D'){
+          param={name : self.userName};
+        }
         $.ajax({
           url: "http://localhost:3009/reserve/list",
           dataType: "json",

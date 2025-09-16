@@ -73,7 +73,10 @@ app.get("/login", async (req, res) => {
   const { userId, password } = req.query;
 
   try {
-    const result = await connection.execute(`SELECT * FROM TB_USER WHERE USERID = '${userId}' AND PASSWORD = '${password}'`);
+    const result = await connection.execute(`SELECT * FROM TB_USER WHERE USERID ='${userId}' AND PASSWORD ='${password}'`);
+    
+    console.log(`SELECT * FROM TB_USER WHERE USERID ='${userId}' AND PASSWORD ='${password}'`);
+    
     const columnNames = result.metaData.map((column) => column.name);
     // 쿼리 결과를 JSON 형태로 변환
     const rows = result.rows.map((row) => {
@@ -283,19 +286,62 @@ app.get("/reserve/insert", async (req, res) => {
 });
 
 app.get("/reserve/list", async (req, res) => {
-  const { userId , reserveNo } = req.query;
+  const { userId , reserveNo,pageSize , offset , name} = req.query;
   let query = "";
-  if (userId != "" && userId != null) {
+  let subQuery="";
+  if (userId != "" && userId != null && userId!="admin") {
     query = `WHERE USERID = '${userId}'`;
+    subQuery = `WHERE USERID = '${userId}'`;
   }
-
+  if (name != "" && name != null) {
+    query=`WHERE DOCTORNAME ='${name}'`;
+    subQuery =`WHERE DOCTORNAME ='${name}'`;
+  }
   if (reserveNo != "" && reserveNo != null) {
     query = `WHERE RESERVENO = '${reserveNo}'`;
   }
 
+  if(pageSize !="" && pageSize !=null & offset!="" && offset !=null){
+    query +=` OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROWS ONLY`;
+  }
+
+
   try {
     const result = await connection.execute(
       `SELECT R.*, TO_CHAR(START_TIME, 'HH24:mm')AS STIME , TO_CHAR(REDATE, 'YYYY-MM-DD')AS RDATE FROM TB_RESERVE R ` + query
+    );
+
+    const columnNames = result.metaData.map((column) => column.name);
+    // 쿼리 결과를 JSON 형태로 변환
+    const rows = result.rows.map((row) => {
+      // 각 행의 데이터를 컬럼명에 맞게 매핑하여 JSON 객체로 변환
+      const obj = {};
+      columnNames.forEach((columnName, index) => {
+        obj[columnName] = row[index];
+      });
+      return obj;
+    });
+
+     const count = await connection.execute(
+      `SELECT COUNT(*)  FROM TB_RESERVE `+subQuery
+    );
+    res.json({
+      result: "success",
+      list: rows,
+      count :count.rows[0][0]
+    });
+  } catch (error) {
+    console.error("Error executing query", error);
+    res.status(500).send("Error executing query");
+  }
+});
+
+app.get("/reserve/check", async (req, res) => {
+  const { start_time } = req.query;
+ 
+  try {
+    const result = await connection.execute(
+      `SELECT * FROM TB_RESERVE WHERE TO_CHAR(START_TIME ,'yyyy-mm-dd:hh24:mm') =:start_time`,[start_time]
     );
 
     const columnNames = result.metaData.map((column) => column.name);
@@ -399,6 +445,61 @@ app.get("/solution/list", async (req, res) => {
   }
 });
 
+app.get("/admin/userList", async (req, res) => {
+  const { pageSize , offset } = req.query;
+
+  try {
+    const result = await connection.execute(
+      `SELECT U.*, TO_CHAR(CDATETIME , 'YYYY-MM-DD') CDATE FROM TB_USER U OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROWS ONLY` 
+    );
+
+    const columnNames = result.metaData.map((column) => column.name);
+    // 쿼리 결과를 JSON 형태로 변환
+    const rows = result.rows.map((row) => {
+      // 각 행의 데이터를 컬럼명에 맞게 매핑하여 JSON 객체로 변환
+      const obj = {};
+      columnNames.forEach((columnName, index) => {
+        obj[columnName] = row[index];
+      });
+      return obj;
+    });
+     const count = await connection.execute(
+      `SELECT COUNT(*)  FROM TB_USER`
+    );
+    res.json({
+      result: "success",
+      list: rows,
+      count :count.rows[0][0]
+    });
+  } catch (error) {
+    console.error("Error executing query", error);
+    res.status(500).send("Error executing query");
+  }
+});
+
+app.get("/findId", async (req, res) => {
+  const {name , email} = req.query;
+  try {
+    const result = await connection.execute(`SELECT USERID FROM TB_USER WHERE NAME=:name AND EMAIL = :email`,[name , email] );
+    const columnNames = result.metaData.map((column) => column.name);
+    // 쿼리 결과를 JSON 형태로 변환
+    const rows = result.rows.map((row) => {
+      // 각 행의 데이터를 컬럼명에 맞게 매핑하여 JSON 객체로 변환
+      const obj = {};
+      columnNames.forEach((columnName, index) => {
+        obj[columnName] = row[index];
+      });
+      return obj;
+    });
+    res.json({
+      result: "success",
+      list: rows,
+    });
+  } catch (error) {
+    console.error("Error executing query", error);
+    res.status(500).send("Error executing query");
+  }
+});
 
 // 서버 시작
 app.listen(3009, () => {

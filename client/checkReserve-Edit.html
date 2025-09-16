@@ -16,6 +16,9 @@
   <body>
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
+       <div>
+         <button @click="fnBack">뒤로가기</button>
+       </div>
       <div>
         <label for=""> 예약일자 : <input type="date" v-model="reserveList.RDATE" /> </label>
       </div>
@@ -34,7 +37,7 @@
       <div>
         <label for="">
           예약시간 :
-          <select name="" v-model="reserveList.START_TIME">
+          <select name="" v-model="reserveList.START_TIME" @change="fnchck">
             <option value="9">09~10</option>
             <option value="10">10~11</option>
             <option value="11">11~12</option>
@@ -76,7 +79,6 @@
           data: {},
           success: function (data) {
             self.doctorList = data.list;
-            console.log(self.doctorList);
           },
         });
       },
@@ -109,7 +111,7 @@
             USERID : self.reserveList.USERID, 
             STATUS: self.reserveList.STATUS , 
             DOCTORNAME : self.reserveList.DOCTORNAME, 
-            START_TIME :self.reserveList.REDATE.substr(0,10) + " " + self.reserveList.START_TIME+ ":00", 
+            START_TIME :self.reserveList.RDATE.substr(0,10) + " " + self.reserveList.START_TIME+ ":00", 
             END_TIME:self.reserveList.REDATE.substr(0,10) + " " + String(Number(self.reserveList.START_TIME)+1)+ ":00",
           },
           success: function (data) {
@@ -117,6 +119,31 @@
             location.href="checkReserve.html";
           },
         });
+      },
+      fnchck(){
+        let self = this;
+        let startDateTime = self.reserveList.RDATE.substr(0,10) + ":"+ self.reserveList.START_TIME+ ":09";
+        console.log(startDateTime);
+        
+        $.ajax({
+          url: "http://localhost:3009/reserve/check",
+          dataType: "json",
+          type: "GET",
+          data: {start_time:startDateTime},
+          success: function (data) {
+            console.log(data);
+            if(data.list.length ==0){
+              alert("사용가능한 시간대입니다.");
+              self.flg=false;
+            }else{
+              alert("이미 예약되어있는 시간대입니다.");
+              self.flg=true;
+            }
+          },
+        });
+      },
+      fnBack(){
+        window.history.back();
       }
     }, // methods
     mounted() {

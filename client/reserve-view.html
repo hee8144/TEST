@@ -16,6 +16,9 @@
   <body>
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
+        <div>
+         <button @click="fnBack">나가기</button>
+       </div>
       <div>
         <label for=""> 예약일자 : <input type="date" v-model="redate" /> </label>
       </div>
@@ -34,7 +37,7 @@
       <div>
         <label for="">
           예약시간 :
-          <select name="" v-model="start_time">
+          <select name="" v-model="start_time" @change="fnchck()">
             <option value="9">09~10</option>
             <option value="10">10~11</option>
             <option value="11">11~12</option>
@@ -66,6 +69,7 @@
         end_time: "",
         status: "",
         doctorList: [],
+        flg:false
       };
     },
     methods: {
@@ -90,6 +94,10 @@
           alert("필수 정보를 입력해주세요.");
           return;
         }
+        if(self.flg){
+          alert("시간을 다시 선택해주세요")
+          return;
+        }
         $.ajax({
           url: "http://localhost:3009/reserve/insert",
           dataType: "json",
@@ -112,10 +120,34 @@
           data: {},
           success: function (data) {
             self.doctorList = data.list;
-            console.log(self.doctorList[0].USERID);
           },
         });
       },
+      fnchck(){
+        let self = this;
+        let startDateTime = self.redate + ":" + self.start_time.padStart(2, "0") + ":09";
+        console.log(startDateTime);
+        
+        $.ajax({
+          url: "http://localhost:3009/reserve/check",
+          dataType: "json",
+          type: "GET",
+          data: {start_time:startDateTime},
+          success: function (data) {
+            console.log(data);
+            if(data.list.length ==0){
+              alert("사용가능한 시간대입니다.");
+              self.flg=false;
+            }else{
+              alert("이미 예약되어있는 시간대입니다.");
+              self.flg=true;
+            }
+          },
+        });
+      },
+      fnBack(){
+        window.close();
+      }
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분

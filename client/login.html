@@ -26,6 +26,8 @@
       </div>
       <div>
         <a href="join.html">회원가입</a>
+        <a href="javascript:;">비밀번호찾기</a>
+        <a href="javascript:;" @click="fnfindId">아이디찾기</a>
       </div>
     </div>
   </body>
@@ -55,11 +57,13 @@
           type: "GET",
           data: param,
           success: function (data) {
+            console.log(data.info);
+            
             self.info = data.info[0];
             sessionStorage.setItem("name", self.info.NAME);
             sessionStorage.setItem("athority", self.info.ATHORITY);
             sessionStorage.setItem("userId", self.info.USERID);
-            if ((data.info[0] = "")) {
+            if (data.info[0] == "") {
               alert("아이디 또는 비밀번호가 잘못되었습니다");
             }
             alert("로그인성공!");
@@ -69,6 +73,9 @@
       },
       fnBack(){
         window.history.back();
+      },
+      fnfindId(){
+        window.open("finduserId.html","findId","width=600px  , height=400px");
       }
     }, // methods
     mounted() {
