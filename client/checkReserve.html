@@ -1,262 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-        <script
-            src="https://code.jquery.com/jquery-3.7.1.js"
-            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-            crossorigin="anonymous"
-        ></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link rel="stylesheet" href="reset.css" />
-        <style>
-            #app {
-                width: 600px;
-                margin: 30px auto;
-            }
-            table,
-            tr,
-            th,
-            td {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
-                text-align: center;
-            }
-            th {
-                width: 150px;
-                background-color: beige;
-            }
-            td {
-                width: 300px;
-                text-align: left;
-            }
-            .check-btn {
-                margin-left: 15px;
-            }
-            .header-wrap {
-                background-color: antiquewhite;
-            }
-            header {
-                max-width: 1140px;
-                line-height: 50px;
-                margin: 0 auto;
-            }
-            header nav ul {
-                display: flex;
-                justify-content: space-between;
-                padding: 10px;
-            }
-            header nav ul li {
-                padding: 10px;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="app">
-            <!-- html 코드는 id가 app인 태그안에서 작업 -->
-            <div class="header-wrap">
-                <header>
-                    <nav>
-                        <ul>
-                            <li>
-                                <h1><a href="javascript:;">logo</a></h1>
-                            </li>
-                            <li>
-                                <a href="reserve.html">예약하기</a>
-                            </li>
-                            <li>
-                                <a href="checkReserve.html">예약확인</a>
-                            </li>
-                            <li>
-                                <a href="main.html">HOME</a>
-                            </li>
-                            <li>
-                                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
-                                <a v-else href="myPage.html">마이페이지</a>
-                            </li>
-                            <li>
-                                <a v-if="userAthority==''" href="login.html">로그인</a>
-                                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </header>
-            </div>
-            <div>
-                <select v-model="pageSize" @change="fnList">
-                    <option value="5">5개씩</option>
-                    <option value="10">10개씩</option>
-                    <option value="15">15개씩</option>
-                    <option value="20">20개씩</option>
-                </select>
-                <table v-if="userAthority =='P'">
-                    <tr>
-                        <th>예약번호</th>
-                        <th>담당의사</th>
-                        <th>예약신청시간</th>
-                        <th>시작시간</th>
-                        <th>이름</th>
-                        <th>상태</th>
-                        <th>삭제</th>
-                        <th>수정</th>
-                    </tr>
-                    <tr v-for="list in reserveList">
-                        <td>{{list.RESERVENO}}</td>
-                        <td>{{list.DOCTORNAME}}</td>
-                        <td>{{list.RDATE}}</td>
-                        <td>{{list.STIME}}</td>
-                        <td>{{list.USERID}}</td>
-                        <td>{{list.STATUS}}</td>
-                        <td><button @click="fnRemove(list.RESERVENO)">삭제</button></td>
-                        <td><button @click="fnEdit(list.RESERVENO)">수정</button></td>
-                    </tr>
-                </table>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+      .header-wrap {
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      header {
+        max-width: 1140px;
+        line-height: 50px;
+        margin: 0 auto;
+      }
+      header nav ul {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+      }
+      header nav ul li a {
+        color: white;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+      header nav ul li a:hover {
+        text-decoration: underline;
+      }
 
-                <table v-if="userAthority =='D' || userAthority=='A'">
-                    <tr>
-                        <th>예약번호</th>
-                        <th>담당의사</th>
-                        <th>예약신청시간</th>
-                        <th>시작시간</th>
-                        <th>이름</th>
-                        <th>상태</th>
-                        <th>삭제</th>
-                        <th>수정</th>
-                        <th>진료내용</th>
-                    </tr>
-                    <tr v-for="list in reserveList">
-                        <td>{{list.RESERVENO}}</td>
-                        <td>{{list.DOCTORNAME}}</td>
-                        <td>{{list.RDATE}}</td>
-                        <td>{{list.STIME}}</td>
-                        <td>{{list.USERID}}</td>
-                        <td>{{list.STATUS}}</td>
-                        <td>
-                            <button v-if="list.SOLUTION == 'X'" @click="fnRemove(list.RESERVENO)">삭제</button>
-                            <span v-else>삭제불가</span>
-                        </td>
-                        <td>
-                            <button v-if="list.SOLUTION == 'X'" @click="fnEdit(list.RESERVENO)">수정</button>
-                            <span v-else>수정불가</span>
-                        </td>
-                        <td>
-                            <button v-if="list.SOLUTION == 'X'" @click="fnSolution(list.RESERVENO)">작성</button>
-                            <span v-else>완료</span>
-                        </td>
-                    </tr>
-                </table>
-                <a v-if="page != 1" href="javascript:;" @click="fnMove(-1)" class="index">◀</a>
-                <a class="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
-                    <span v-if="num == page" style="color: blue; font-weight: bold"> {{num}} </span>
-                    <span v-else> {{num}} </span>
-                </a>
-                <a v-if="page != index" href="javascript:;" @click="fnMove(1)" class="index">▶</a>
-            </div>
+      .section-wrap {
+        max-width: 1000px;
+        margin: 0 auto 40px auto;
+        padding: 20px;
+      }
+      
+      .select-wrap{
+        display: flex;
+        justify-content: space-between;
+      }
+
+      select {
+        padding: 6px 10px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 0.95rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+
+      th {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      td {
+        color: #555;
+      }
+
+      .no-record{
+        text-align: center;
+      }
+
+      button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 0.9rem;
+      }
+
+      button:hover {
+        opacity: 0.8;
+      }
+
+      button.delete {
+        background-color: #f06b6b;
+        color: white;
+      }
+
+      button.edit {
+        background-color: #4facfe;
+        color: white;
+      }
+
+      button.solution {
+        background-color: #2ed573;
+        color: white;
+      }
+
+      span {
+        color: #999;
+        font-size: 0.85rem;
+      }
+
+      .index {
+        margin: 0 4px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .index span {
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: 0.2s;
+      }
+
+      .index span:hover {
+        background-color: #eee;
+      }
+
+      select,
+      table,
+      .index {
+        margin-top: 10px;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        gap: 6px;
+      }
+
+      .pagination a.index {
+        display: inline-block;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .pagination a.index span {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: 0.3s;
+        border: 1px solid #ddd;
+        background-color: white;
+      }
+
+      .pagination a.index span:hover {
+        background-color: #f0f0f0;
+      }
+
+      .pagination a.index span.current {
+        background-color: #4facfe;
+        color: white;
+        font-weight: bold;
+        border-color: #4facfe;
+      }
+
+      .pagination a.index.arrow span {
+        font-weight: bold;
+        background-color: #eee;
+        padding: 0 5px;
+      }
+
+      .pagination a.index.arrow span:hover {
+        background-color: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+      <div class="header-wrap">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <h1><a href="javascript:;">logo</a></h1>
+              </li>
+              <li>
+                <a href="reserve.html">예약하기</a>
+              </li>
+              <li>
+                <a href="checkReserve.html">예약확인</a>
+              </li>
+              <li>
+                <a href="main.html">HOME</a>
+              </li>
+              <li>
+                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                <a v-else href="myPage.html">마이페이지</a>
+              </li>
+              <li>
+                <a v-if="userAthority==null" href="login.html">로그인</a>
+                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+      </div>
+
+      <div class="section-wrap">
+        <div class="select-wrap">
+          <select v-model="pageSize" @change="fnList">
+            <option value="5">5개씩</option>
+            <option value="10">10개씩</option>
+            <option value="15">15개씩</option>
+            <option value="20">20개씩</option>
+          </select>
+
+          <select v-model="solution" @change="fnList">
+          <option value="">:: 진료여부 ::</option>
+          <option value="O">:: O ::</option>
+          <option value="X">:: X ::</option>
+        </select>
         </div>
-    </body>
+
+        <table v-if="userAthority =='P'">
+          <tr>
+            <th>예약번호</th>
+            <th>담당의사</th>
+            <th>예약신청시간</th>
+            <th>시작시간</th>
+            <th>이름</th>
+            <th>상태</th>
+            <th>삭제</th>
+            <th>수정</th>
+          </tr>
+          <tr v-if="reserveList.length > 0" v-for="list in reserveList">
+            <td>{{list.RESERVENO}}</td>
+            <td>{{list.DOCTORNAME}}</td>
+            <td>{{list.RDATE}}</td>
+            <td>{{list.STIME}}</td>
+            <td>{{list.USERID}}</td>
+            <td>{{list.STATUS}}</td>
+            <td><button @click="fnRemove(list.RESERVENO)">삭제</button></td>
+            <td><button @click="fnEdit(list.RESERVENO)">수정</button></td>
+          </tr>
+
+           <tr v-else>
+              <td class="no-record" colspan="8">진료기록이 없습니다</td>
+            </tr>
+        </table>
+
+
+        <table v-if="userAthority =='D' || userAthority=='A'">
+          <tr>
+            <th>예약번호</th>
+            <th>담당의사</th>
+            <th>예약신청시간</th>
+            <th>시작시간</th>
+            <th>이름</th>
+            <th>상태</th>
+            <th>삭제</th>
+            <th>수정</th>
+            <th>진료내용</th>
+          </tr>
+          <tr v-if="reserveList.length > 0" v-for="list in reserveList">
+            <td>{{list.RESERVENO}}</td>
+            <td>{{list.DOCTORNAME}}</td>
+            <td>{{list.RDATE}}</td>
+            <td>{{list.STIME}}</td>
+            <td>{{list.USERID}}</td>
+            <td>{{list.STATUS}}</td>
+            <td>
+              <button v-if="list.SOLUTION == 'X'" @click="fnRemove(list.RESERVENO)">삭제</button>
+              <span v-else>삭제불가</span>
+            </td>
+            <td>
+              <button v-if="list.SOLUTION == 'X'" @click="fnEdit(list.RESERVENO)">수정</button>
+              <span v-else>수정불가</span>
+            </td>
+            <td>
+              <button v-if="list.SOLUTION == 'X'" @click="fnSolution(list.RESERVENO)">작성</button>
+              <span v-else>완료</span>
+            </td>
+          </tr>
+          <tr v-else>
+              <td class="no-record" colspan="9">진료기록이 없습니다</td>
+            </tr>
+        </table>
+        <div class="pagination">
+          <a v-if="page != 1" href="javascript:;" @click="fnMove(-1)" class="index arrow"><span class="material-symbols-outlined">arrow_left</span></a>
+
+          <a class="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
+            <span :class="{ current: num == page }">{{num}}</span>
+          </a>
+
+          <a v-if="page != index" href="javascript:;" @click="fnMove(1)" class="index arrow"><span class="material-symbols-outlined">arrow_right</span></a>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
 
 <script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                // 변수 - (key : value)
-                userId: "",
-                userAthority: "",
-                userName:"",
-                reserveList: [],
-                reserveNo: "",
-                index: 0,
-                pageSize: 5,
-                page: 1,
-            };
-        },
-        methods: {
-            // 함수(메소드) - (key : function())
-            fnList: function () {
-                let self = this;
-                let param = {
-                    userId: self.userId,
-                    pageSize: self.pageSize,
-                    offset: (self.page - 1) * self.pageSize,
-                };
-                if(self.userAthority=="D"){
-                  param={
-                    name:self.userName,
-                    pageSize: self.pageSize,
-                    offset: (self.page - 1) * self.pageSize,
-                  }
-                  console.log(param);
-                }
-                $.ajax({
-                    url: "http://localhost:3009/reserve/list",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
-                        console.log(data);
-                        self.reserveList = data.list;
-                        self.index = Math.ceil(data.count / self.pageSize);
-                    },
-                });
-            },
-            fnRemove(reserveNo) {
-                let self = this;
-                let param = { reserveNo: reserveNo };
-                console.log(reserveNo);
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        userId: "",
+        userAthority: "",
+        userName: "",
+        reserveList: [],
+        reserveNo: "",
+        index: 0,
+        pageSize: 5,
+        page: 1,
+        solution:""
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnList: function () {
+        let self = this;
+        let param = {
+          userId: self.userId,
+          pageSize: self.pageSize,
+          offset: (self.page - 1) * self.pageSize,
+          solution:self.solution
+        };
+        if (self.userAthority == "D") {
+          param = {
+            name: self.userName,
+            pageSize: self.pageSize,
+            offset: (self.page - 1) * self.pageSize,
+            solution:self.solution
+          };
+          console.log(param);
+        }
+        $.ajax({
+          url: "http://localhost:3009/reserve/list",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            console.log(data);
+            self.reserveList = data.list;
+            self.index = Math.ceil(data.count / self.pageSize);
+          },
+        });
+      },
+      fnRemove(reserveNo) {
+        let self = this;
+        let param = { reserveNo: reserveNo };
+        console.log(reserveNo);
 
-                if (!confirm("정말삭제하시겠습니까?")) {
-                    return;
-                }
+        if (!confirm("정말삭제하시겠습니까?")) {
+          return;
+        }
 
-                $.ajax({
-                    url: "http://localhost:3009/reserve/delete",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
-                        alert("삭제완료되었습니다.");
-                        self.fnList();
-                    },
-                });
-            },
-            fnEdit(reserveNo) {
-                location.href = `checkReserve-Edit.html?reserveNo=${reserveNo}`;
-            },
-            fnSolution(reserveNo) {
-                window.open(`checkReserve-view.html?reserveNo=${reserveNo}`, "checkReserve", "width=800,height=800");
-            },
-            fnLogout() {
-                let self = this;
-                sessionStorage.setItem("name", "");
-                sessionStorage.setItem("athority", "");
-                sessionStorage.setItem("userId", "");
-                location.reload();
-            },
-            fnPage(num) {
-                let self = this;
-                self.page = num;
-                self.fnList();
-            },
-            fnMove(num) {
-                let self = this;
-                self.page += num;
-                self.fnList();
-            },
-        }, // methods
-        mounted() {
-            // 처음 시작할 때 실행되는 부분
-            let self = this;
-            self.userId = sessionStorage.getItem("userId");
-            self.userAthority = sessionStorage.getItem("athority");
-            self.userName = sessionStorage.getItem("name");
-
+        $.ajax({
+          url: "http://localhost:3009/reserve/delete",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {
+            alert("삭제완료되었습니다.");
             self.fnList();
-        },
-    });
+          },
+        });
+      },
+      fnEdit(reserveNo) {
+        window.open(`checkReserve-Edit.html?reserveNo=${reserveNo}`,"checkReserveEdit","width=800, height=650,top=200,left=300");
+      },
+      fnSolution(reserveNo) {
+        window.open(`checkReserve-view.html?reserveNo=${reserveNo}`, "checkReserve", "width=800, height=650,top=200,left=300" );
+      },
+      fnLogout() {
+        sessionStorage.clear();
+        location.href = "main.html";
+      },
+      fnPage(num) {
+        let self = this;
+        self.page = num;
+        self.fnList();
+      },
+      fnMove(num) {
+        let self = this;
+        self.page += num;
+        self.fnList();
+      },
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      self.userId = sessionStorage.getItem("userId");
+      self.userAthority = sessionStorage.getItem("athority");
+      self.userName = sessionStorage.getItem("name");
+      if (self.userAthority==null) {
+        alert("로그인하신뒤 이용가능합니다.");
+        location.href = "login.html";
+      }
+      self.fnList();
+    },
+  });
 
-    app.mount("#app");
+  app.mount("#app");
 </script>

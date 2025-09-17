@@ -274,7 +274,8 @@ app.get("/reserve/insert", async (req, res) => {
     await connection.execute(
       `INSERT INTO TB_RESERVE VALUES (B_SEQ.NEXTVAL, TO_DATE(:redate ,'YYYY-MM-DD'), :userId , :status , :doctorName , 'X' , TO_DATE(:start_time, 'YYYY-MM-DD HH24:MI'), TO_DATE(:end_time, 'YYYY-MM-DD HH24:MI'))`,
       [redate, userId, status, doctorName, start_time, end_time],
-      { autoCommit: true }
+      { autoCommit: true },
+      
     );
     res.json({
       result: "success",
@@ -286,7 +287,7 @@ app.get("/reserve/insert", async (req, res) => {
 });
 
 app.get("/reserve/list", async (req, res) => {
-  const { userId , reserveNo,pageSize , offset , name} = req.query;
+  const { userId , reserveNo,pageSize , offset , name,solution} = req.query;
   let query = "";
   let subQuery="";
   if (userId != "" && userId != null && userId!="admin") {
@@ -301,14 +302,24 @@ app.get("/reserve/list", async (req, res) => {
     query = `WHERE RESERVENO = '${reserveNo}'`;
   }
 
+  if (solution != "" && solution != null) {
+    if(solution =="O"){
+      query += ` ORDER BY SOLUTION ASC`;
+    }else{
+      query +=` ORDER BY SOLUTION DESC`;
+    }
+  }else{
+    query +=`ORDER BY RESERVENO DESC`
+  }
+
   if(pageSize !="" && pageSize !=null & offset!="" && offset !=null){
     query +=` OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROWS ONLY`;
   }
 
-
+  
   try {
     const result = await connection.execute(
-      `SELECT R.*, TO_CHAR(START_TIME, 'HH24:mm')AS STIME , TO_CHAR(REDATE, 'YYYY-MM-DD')AS RDATE FROM TB_RESERVE R ` + query
+      `SELECT R.*, TO_CHAR(START_TIME, 'HH24:mi')AS STIME , TO_CHAR(REDATE, 'YYYY-MM-DD')AS RDATE FROM TB_RESERVE R ` + query
     );
 
     const columnNames = result.metaData.map((column) => column.name);
@@ -341,7 +352,7 @@ app.get("/reserve/check", async (req, res) => {
  
   try {
     const result = await connection.execute(
-      `SELECT * FROM TB_RESERVE WHERE TO_CHAR(START_TIME ,'yyyy-mm-dd:hh24:mm') =:start_time`,[start_time]
+      `SELECT * FROM TB_RESERVE WHERE TO_CHAR(START_TIME ,'yyyy-mm-dd:hh24:mi') =:start_time`,[start_time]
     );
 
     const columnNames = result.metaData.map((column) => column.name);
@@ -419,7 +430,15 @@ app.get('/solution', async (req, res) => {
 });
 
 app.get("/solution/list", async (req, res) => {
-  const {userId} = req.query;
+  const {userId , pageSize , offset } = req.query;
+
+  let query="";
+  let subQuery ="";
+
+  if(pageSize !="" && pageSize !=null & offset!="" && offset !=null){
+    query +=` OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROWS ONLY`;
+    subQuery =`WHERE USERID = '${userId}'`
+  }
 
   try {
     const result = await connection.execute(`SELECT * FROM TB_RECORD WHERE USERID ='${userId}'`,);
@@ -435,9 +454,13 @@ app.get("/solution/list", async (req, res) => {
       });
       return obj;
     });
+    const count = await connection.execute(
+      `SELECT COUNT(*)  FROM TB_RECORD `+subQuery
+    );
     res.json({
       result: "success",
       list: rows,
+      count:count.rows[0][0]
     });
   } catch (error) {
     console.error("Error executing query", error);
@@ -498,6 +521,24 @@ app.get("/findId", async (req, res) => {
   } catch (error) {
     console.error("Error executing query", error);
     res.status(500).send("Error executing query");
+  }
+});
+
+app.get('/findPwd', async (req, res) => {
+  const { name , userId, pwd} = req.query;
+
+  try {
+    await connection.execute(
+      `UPDATE TB_USER SET PASSWORD = :pwd WHERE USERID = :userId AND NAME = :name`,
+      [pwd , userId , name],
+      { autoCommit: true }
+    );
+    res.json({
+        result : "success"
+    });
+  } catch (error) {
+    console.error('Error executing update', error);
+    res.status(500).send('Error executing update');
   }
 });
 

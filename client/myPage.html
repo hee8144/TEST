@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>마이페이지</title>
     <script
       src="https://code.jquery.com/jquery-3.7.1.js"
       integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
@@ -12,8 +12,19 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="reset.css" />
     <style>
-    .header-wrap {
-        background-color: antiquewhite;
+
+      .wrap {
+        width: 100%;
+        text-align: center;
+      }
+
+      .header-wrap {
+        width: 100%;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        top: 0;
+        z-index: 100;
       }
       header {
         max-width: 1140px;
@@ -23,253 +34,363 @@
       header nav ul {
         display: flex;
         justify-content: space-between;
-        padding: 10px;
+        align-items: center;
+        padding: 15px;
+        margin: 0;
       }
-      header nav ul li {
-        padding: 10px;
+      header nav ul li a {
+        color: white;
+        font-weight: 500;
+        transition: 0.3s;
       }
-       #app {
-        width: 800px;
-        margin: 30px auto;
+      header nav ul li a:hover {
+        text-decoration: underline;
       }
-      table,
-      tr,
+
+      .section-wrap {
+        max-width: 1000px;
+        margin: 0 auto 40px auto;
+        padding: 20px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .section-header h2 {
+        margin: 0;
+        color: #333;
+      }
+      .section-header button {
+        margin: 0;
+      }
+      button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-bottom: 15px;
+        background-color: #4facfe;
+        color: white;
+      }
+      button:hover {
+        opacity: 0.85;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
       th,
       td {
-        border: 1px solid black;
-        border-collapse: collapse;
-        padding: 5px 10px;
+        border: 1px solid #ddd;
+        padding: 12px;
+        font-size: 0.95rem;
         text-align: center;
       }
       th {
-        width: 150px;
-        background-color: beige;
+        background-color: #f0f0f0;
+        color: #333;
       }
       td {
-        width: 300px;
+        color: #555;
+      }
+
+      h2 {
         text-align: left;
+        margin-bottom: 10px;
+        color: #333;
+        font-size: 1.2rem;
       }
-      .check-btn {
-        margin-left: 15px;
+
+      .no-record {
+        text-align: center;
+        color: #999;
+        font-style: italic;
       }
-      </style>
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        gap: 6px;
+      }
+
+      .pagination a.index {
+        display: inline-block;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .pagination a.index span {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: 0.3s;
+        border: 1px solid #ddd;
+        background-color: white;
+      }
+
+      .pagination a.index span:hover {
+        background-color: #f0f0f0;
+      }
+
+      .pagination a.index span.current {
+        background-color: #4facfe;
+        color: white;
+        font-weight: bold;
+        border-color: #4facfe;
+      }
+
+      .pagination a.index.arrow span {
+        font-weight: bold;
+        background-color: #eee;
+      }
+
+      .pagination a.index.arrow span:hover {
+        background-color: #ddd;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
-      <!-- html 코드는 id가 app인 태그안에서 작업 -->
+      <!-- 헤더 -->
+      <div class="wrap">
         <div class="header-wrap">
-       <header>
-          <nav>
-            <ul>
-              <li>
-                <h1><a href="javascript:;">logo</a></h1>
-              </li>
-              <li>
-                <a href="reserve.html">예약하기</a>
-              </li>
-              <li>
-                <a href="checkReserve.html">예약확인</a>
-              </li>
-              <li>
-                <a href="main.html">HOME</a>
-              </li>
-              <li >
-                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
-                <a v-else href="myPage.html">마이페이지</a>
-              </li>
-              <li>
-                <a v-if="userAthority==''" href="login.html">로그인</a>
-                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
-              </li>
-            </ul>
-          </nav>
-        </header>
-      </div>
-
-      <div>
-        개인정보
-        <button @click="fnEdit(userId)">수정</button>
-        <table>
+          <header>
+            <nav>
+              <ul>
+                <li>
+                  <h1><a href="javascript:;">logo</a></h1>
+                </li>
+                <li><a href="reserve.html">예약하기</a></li>
+                <li><a href="checkReserve.html">예약확인</a></li>
+                <li><a href="main.html">HOME</a></li>
+                <li>
+                  <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                  <a v-else href="myPage.html">마이페이지</a>
+                </li>
+                <li>
+                  <a v-if="userAthority==''" href="login.html">로그인</a>
+                  <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
+                </li>
+              </ul>
+            </nav>
+          </header>
+        </div>
+        <div class="section-wrap">
+          <div class="section-header">
+            <h2>개인정보</h2>
+            <button @click="fnEdit(userId)">수정</button>
+          </div>
+          <table>
             <tr>
-                <th>이름</th>
-                <th>아이디</th>
-                <th>비밀번호</th>
-                <th>이메일</th>
-                <th>번호</th>
-                <th>생일</th>
-                <th>성별</th>
-                <th>가입날짜</th>
+              <th>이름</th>
+              <th>아이디</th>
+              <th>비밀번호</th>
+              <th>이메일</th>
+              <th>번호</th>
+              <th>생일</th>
+              <th>성별</th>
+              <th>가입날짜</th>
             </tr>
             <tr>
-                <td>{{userInfo.NAME}}</td>
-                <td>{{userInfo.USERID}}</td>
-                <td>{{userInfo.PASSWORD}}</td>
-                <td>{{userInfo.EMAIL}}</td>
-                <td>{{userInfo.PHONE}}</td>
-                <td>{{userInfo.BIRTH}}</td>
-                <td>{{userInfo.GENDER}}</td>
-                <td>{{userInfo.CDATE}}</td>
+              <td>{{userInfo.NAME}}</td>
+              <td>{{userInfo.USERID}}</td>
+              <td>{{userInfo.PASSWORD}}</td>
+              <td>{{userInfo.EMAIL}}</td>
+              <td>{{userInfo.PHONE}}</td>
+              <td>{{userInfo.BIRTH}}</td>
+              <td>{{userInfo.GENDER}}</td>
+              <td>{{userInfo.CDATE}}</td>
             </tr>
-        </table>
-      </div>
-
-      <div>
-        <h2>예약정보</h2>
-        <table>
-             <tr >
-                <th>예약번호</th>
-                <th>담당의사</th>
-                <th>예약신청시간</th>
-                <th>시작시간</th>
-                <th>이름</th>
-                <th>상태</th>
-                <th>진료여부</th>
-            </tr>
-            <tr v-for="list in reserveList">
-                <td>{{list.RESERVENO}}</td>
-                <td>{{list.DOCTORNAME}}</td>
-                <td>{{list.RDATE}}</td>
-                <td>{{list.STIME}}</td>
-                <td>{{list.USERID}}</td>
-                <td>{{list.STATUS}}</td>
-                <td>{{list.SOLUTION}}</td>
-            </tr>
-        </table>
-      </div>
-
-      <div>
-        진료기록
-        <table>
+          </table>
+          <h2>예약정보</h2>
+          <table>
             <tr>
-                <th>
-                    진료번호
-                </th>
-                <th>
-                    아이디
-                </th>
-                 <th>
-                    담당의사
-                </th>
-                 <th>
-                    증상
-                </th>
-                <th>
-                    진단
-                </th>
-                <th>
-                    처방
-                </th>
+              <th>예약번호</th>
+              <th>담당의사</th>
+              <th>예약신청시간</th>
+              <th>시작시간</th>
+              <th>이름</th>
+              <th>상태</th>
+              <th>진료여부</th>
+            </tr>
+            <tr v-if="reserveList.length > 0" v-for="list in reserveList">
+              <td>{{list.RESERVENO}}</td>
+              <td>{{list.DOCTORNAME}}</td>
+              <td>{{list.RDATE}}</td>
+              <td>{{list.STIME}}</td>
+              <td>{{list.USERID}}</td>
+              <td>{{list.STATUS}}</td>
+              <td>{{list.SOLUTION}}</td>
             </tr>
 
-              <tr v-if="recordList.length >0" v-for="item in recordList">
-                <td>{{item.RESERVENO}}</td>
-                <td>{{item.USERID}}</td>
-                <td>{{item.DOCTORID}}</td>
-                <td>{{item.SYMPTOMS}}</td>
-                <td>{{item.DIAGNOSIS}}</td>
-                <td>{{item.PRESCRIPTION}}</td>
+             <tr v-else>
+              <td class="no-record" colspan="7">진료기록이 없습니다</td>
+            </tr>
+          </table>
+          <div class="pagination">
+            <a v-if="page != 1" href="javascript:;" @click="fnMove(-1)" class="index arrow">◀</a>
+            <a class="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
+              <span :class="{ current: num == page }">{{num}}</span>
+            </a>
+            <a v-if="page != index" href="javascript:;" @click="fnMove(1)" class="index arrow">▶</a>
+          </div>
+          <h2>진료기록</h2>
+          <table>
+            <tr>
+              <th>진료번호</th>
+              <th>아이디</th>
+              <th>담당의사</th>
+              <th>증상</th>
+              <th>진단</th>
+              <th>처방</th>
+            </tr>
+            <tr v-if="recordList.length > 0" v-for="item in recordList">
+              <td>{{item.RESERVENO}}</td>
+              <td>{{item.USERID}}</td>
+              <td>{{item.DOCTORID}}</td>
+              <td>{{item.SYMPTOMS}}</td>
+              <td>{{item.DIAGNOSIS}}</td>
+              <td>{{item.PRESCRIPTION}}</td>
             </tr>
             <tr v-else>
-                <td>
-                    진료기록이없습니다
-                </td>
+              <td class="no-record" colspan="6">진료기록이 없습니다</td>
             </tr>
-
-        </table>
+          </table>
+          <div class="pagination">
+            <a v-if="recordPage != 1" href="javascript:;" @click="fnRecordMove(-1)" class="index arrow">◀</a>
+            <a class="index" href="javascript:;" v-for="num in recordIndex" @click="fnRecordPage(num)">
+              <span :class="{ current: num == recordPage }">{{num}}</span>
+            </a>
+            <a v-if="recordPage != recordIndex" href="javascript:;" @click="fnRecordMove(1)" class="index arrow">▶</a>
+          </div>
+        </div>
       </div>
-
     </div>
+
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            userId: "",
+            userAthority: "",
+            userName: "",
+            userInfo: {},
+            reserveList: [],
+            recordList: [],
+            index:0,
+            pageSize:5,
+            page:1,
+            recordPage:1,
+            recordPageSize:5,
+            recordIndex:0,
+
+          };
+        },
+        methods: {
+          fnUserInfo() {
+            let self = this;
+            $.ajax({
+              url: "http://localhost:3009/user/list",
+              type: "GET",
+              data: { userId: self.userId },
+              dataType: "json",
+              success(data) {
+                self.userInfo = data.list[0];
+              },
+            });
+          },
+          fnUserReserve() {
+            let self = this;
+            let param = { 
+              userId: self.userId,
+              pageSize : self.pageSize,
+              offset: (self.page - 1) * self.pageSize
+             };
+            if (self.userAthority == "D") param = { name: self.userName };
+            $.ajax({
+              url: "http://localhost:3009/reserve/list",
+              type: "GET",
+              data: param,
+              dataType: "json",
+              success(data) {
+                self.reserveList = data.list;
+                self.index = Math.ceil(data.count / self.pageSize);
+              },
+            });
+          },
+          fnUserRecord() {
+            let self = this;
+            $.ajax({
+              url: "http://localhost:3009/solution/list",
+              type: "GET",
+              data: { 
+                userId: self.userId,
+                pageSize:self.recordPageSize,
+                offset:(self.recordPage-1) * self.pageSize
+               },
+              dataType: "json",
+              success(data) {
+                self.recordList = data.list;
+                self.recordIndex=Math.ceil(data.count/self.recordPageSize)
+              },
+            });
+          },
+          fnLogout() {
+            sessionStorage.clear();
+            location.href = "main.html";
+          },
+          fnEdit(userId) {
+            window.open("myPage-view.html?userId=" + userId, "myPage", "width=680,height=520,top=100,left=100,scrollbars=yes");
+          },
+          fnPage(num) {
+            let self = this;
+            self.page = num;
+            self.fnUserReserve();
+          },
+          fnMove(num) {
+            let self = this;
+            self.page += num;
+            self.fnUserReserve();
+          },
+          fnRecordPage(num) {
+            let self = this;
+            self.page = num;
+            self.fnUserRecord();
+          },
+          fnRecordMove(num) {
+            let self = this;
+            self.page += num;
+            self.fnUserRecord();
+          },
+        },
+        mounted() {
+          let self = this;
+          self.userName = sessionStorage.getItem("name");
+          self.userAthority = sessionStorage.getItem("athority");
+          self.userId = sessionStorage.getItem("userId");
+          if (self.userAthority == "") {
+            alert("로그인하신뒤 이용가능합니다.");
+            location.href = "login.html";
+          }
+          self.fnUserInfo();
+          self.fnUserReserve();
+          self.fnUserRecord();
+        },
+      });
+
+      app.mount("#app");
+    </script>
   </body>
 </html>
-
-<script>
-  const app = Vue.createApp({
-    data() {
-      return {
-        // 변수 - (key : value)
-        userId:"",
-        userAthority:"",
-        userName:"",
-        userInfo:{},
-        reserveList:[],
-        recordList:[],
-      };
-    },
-    methods: {
-      // 함수(메소드) - (key : function())
-      fnUserInfo: function () {
-        let self = this;
-        let param = {userId : self.userId};
-        $.ajax({
-          url: "http://localhost:3009/user/list",
-          dataType: "json",
-          type: "GET",
-          data: param,
-          success: function (data) {
-            console.log(data.list[0]);
-            self.userInfo = data.list[0];
-            
-          },
-        });
-      },
-      fnUserReserve(){
-        let self = this;
-        let param = {userId : self.userId};
-        if(self.userAthority == 'D'){
-          param={name : self.userName};
-        }
-        $.ajax({
-          url: "http://localhost:3009/reserve/list",
-          dataType: "json",
-          type: "GET",
-          data: param,
-          success: function (data) {
-            console.log(data.list);
-            self.reserveList = data.list;
-          },
-        });
-      },
-      fnUserRecord(){
-        let self = this;
-        let param = {userId : self.userId};
-        $.ajax({
-          url: "http://localhost:3009/solution/list",
-          dataType: "json",
-          type: "GET",
-          data: param,
-          success: function (data) {
-            console.log(data.list);
-            self.recordList = data.list;
-            
-          },
-        });
-      },
-      fnLogout(){
-        let self = this;
-        sessionStorage.setItem("name","");
-        sessionStorage.setItem("athority","");
-        location.reload();
-
-      },
-      fnEdit(userId){
-        window.open("myPage-view.html?userId="+userId,"myPage","width=600 , height=400");
-      }
-    }, // methods
-    mounted() {
-      // 처음 시작할 때 실행되는 부분
-      let self = this;
-      self.userName = sessionStorage.getItem("name");
-      self.userAthority = sessionStorage.getItem("athority");
-      self.userId = sessionStorage.getItem("userId");
-      if(self.userAthority == ""){
-        alert("로그인하신뒤 이용가능합니다.")
-        location.href="login.html"
-      }
-      self.fnUserInfo();
-      self.fnUserReserve();
-      self.fnUserRecord();
-    },
-  });
-
-  app.mount("#app");
-</script>

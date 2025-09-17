@@ -12,26 +12,107 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="reset.css" />
     <style>
-         #app {
-        width: 600px;
-        margin: 30px auto;
+        .wrap {
+        max-width: 500px;
+        margin: 40px auto;
+        background-color: white;
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
       }
-      table,
-      tr,
-      th,
-      td {
-        border: 1px solid black;
+
+      .section-wrap h2{
+        font-size: 22px;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+
+      .section-wrap table {
+        width: 100%;
         border-collapse: collapse;
-        padding: 5px 10px;
+        margin-bottom: 20px;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .section-wrap th,
+      .section-wrap td {
+        border: 1px solid #ddd;
+        padding: 10px;
         text-align: center;
       }
-      th {
-        width: 150px;
-        background-color: beige;
+      .section-wrap th {
+        background-color: #f0f0f0;
+        color: #333;
       }
-      td {
-        width: 300px;
-        text-align: left;
+      .section-wrap td {
+        color: #555;
+      }
+      .section-wrap td a {
+        color: #4facfe;
+      }
+      .section-wrap td a:hover {
+        text-decoration: underline;
+      }
+
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-top: 20px;
+        background-color: #4facfe;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      #app > div:first-child button {
+        width: 100px;
+        margin: 0 0 20px 0;
+        background-color: #f06b6b;
+      }
+
+      #app > div:first-child button:hover {
+        background-color: #ff4c4c;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 20px;
+      }
+      .pagination a.index {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+      }
+      .pagination a.index span {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        background-color: white;
+        transition: 0.3s;
+      }
+      .pagination a.index span:hover {
+        background-color: #f0f0f0;
+      }
+      .pagination a.index span.current {
+        background-color: #4facfe;
+        color: white;
+        font-weight: bold;
+        border-color: #4facfe;
+      }
+      .pagination a.index.arrow span {
+        font-weight: bold;
+        background-color: #eee;
+      }
+      .pagination a.index.arrow span:hover {
+        background-color: #ddd;
       }
     </style>
   </head>
@@ -39,44 +120,61 @@
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
 
-      <div v-if="list.length == 0">
-        진료기록이없습니다.
-      </div>
-      <div v-else>
-        {{name}}님의 진료기록
-        <table>
-            <tr>
-                <th>
-                    진료번호
-                </th>
-                <th>
-                    아이디
-                </th>
-                 <th>
-                    담당의사
-                </th>
-                 <th>
-                    증상
-                </th>
-                <th>
-                    진단
-                </th>
-                <th>
-                    처방
-                </th>
-            </tr>
-
-            <tr v-for="item in list">
-                <td>{{item.RESERVENO}}</td>
-                <td>{{item.USERID}}</td>
-                <td>{{item.DOCTORID}}</td>
-                <td>{{item.SYMPTOMS}}</td>
-                <td>{{item.DIAGNOSIS}}</td>
-                <td>{{item.PRESCRIPTION}}</td>
-            </tr>
-
-           
-        </table>
+      
+      <div class="wrap">
+        <div class="section-wrap">
+            <div v-if="list.length == 0">
+              <div class="backbtn-wrap">
+                <button @click="fnBack">나가기</button>
+              </div>
+              진료기록이없습니다.
+            </div>
+            <div v-else>
+              <div class="backbtn-wrap">
+                <button @click="fnBack">나가기</button>
+              </div>
+              <h2>
+                {{name}}님의 진료기록
+              </h2>
+              <table>
+                  <tr>
+                      <th>
+                          진료번호
+                      </th>
+                      <th>
+                          아이디
+                      </th>
+                       <th>
+                          담당의사
+                      </th>
+                       <th>
+                          증상
+                      </th>
+                      <th>
+                          진단
+                      </th>
+                      <th>
+                          처방
+                      </th>
+                  </tr>
+                  <tr v-for="item in list">
+                      <td>{{item.RESERVENO}}</td>
+                      <td>{{item.USERID}}</td>
+                      <td>{{item.DOCTORID}}</td>
+                      <td>{{item.SYMPTOMS}}</td>
+                      <td>{{item.DIAGNOSIS}}</td>
+                      <td>{{item.PRESCRIPTION}}</td>
+                  </tr>
+                </table>
+                <div class="pagination">
+                <a v-if="page != 1" href="javascript:;" @click="fnMove(-1)" class="index arrow"><span>◀</span></a>
+                <a class="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
+                  <span :class="{ current: num == page }">{{num}}</span>
+                </a>
+                <a v-if="page != index" href="javascript:;" @click="fnMove(1)" class="index arrow"><span>▶</span></a>
+              </div>
+            </div>
+        </div>
       </div>
     </div>
   </body>
@@ -89,24 +187,35 @@
         // 변수 - (key : value)
         userId:"",
         name:"",
-        list:[]
+        list:[],
+        index:0,
+        pageSize:5,
+        page:1
       };
     },
     methods: {
       // 함수(메소드) - (key : function())
       fnList: function () {
         let self = this;
-        let param = {};
+        let param = {
+          userId : self.userId,
+          pageSize : self.pageSize,
+          offset: (self.page - 1) * self.pageSize
+        };
         $.ajax({
           url: "http://localhost:3009/solution/list",
           dataType: "json",
           type: "GET",
-          data: {userId : self.userId},
+          data: param,
           success: function (data) {
             console.log(data);
             self.list=data.list;
+            self.index = Math.ceil(data.count / self.pageSize);
           },
         });
+      },
+      fnBack() {
+        window.close();
       },
     }, // methods
     mounted() {

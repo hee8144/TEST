@@ -1,68 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>회원가입</title>
     <script
       src="https://code.jquery.com/jquery-3.7.1.js"
       integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
       crossorigin="anonymous"
     ></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="reset.css" />
-    <style></style>
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: linear-gradient(135deg, #e0f2ff, #ffffff);
+        min-height: 100vh;
+      }
+
+      .top-bar {
+        width: 100%;
+        height: 50px;
+        max-width: 500px;
+        margin-bottom: 15px;
+      }
+
+      .top-bar button , .top-bar h1{
+        float: left;
+        height: 50px;
+        line-height: 50px;
+      }
+      .top-bar button{
+        margin-right: 150px;
+      }
+      
+      .btn-back {
+        padding: 0px 14px;
+        border: none;
+        border-radius: 8px;
+        background: #f0f0f0;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-back span{
+        line-height: 50px;
+      }
+      .btn-back:hover {
+        background: #e0e0e0;
+      }
+
+      .join-container {
+        background: #fff;
+        padding: 35px 30px;
+        margin: 0 auto;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        width: 500px;
+      }
+
+      .join-container h1 {
+        font-size: 22px;
+        color: #0a74da;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+        clear: both;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 6px;
+        color: #333;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: calc(100% - 24px);
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        transition: border 0.3s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border: 1px solid #0a74da;
+        box-shadow: 0 0 5px rgba(10, 116, 218, 0.3);
+      }
+
+      .inline-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      .inline-group select,
+      .inline-group input {
+        flex: 1;
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 15px;
+        font-size: 14px;
+        align-items: center;
+      }
+
+      .radio-group label{
+        width: 50%;
+      }
+
+      .radio-group label span{
+        display: inline-block;
+        width: 100%;
+        background-color: #e0f2ff ;
+        line-height: 40px;
+        border-radius: 8px;
+        text-align: center;
+        color: #0a74da;
+      }
+      .radio-group input:checked + span{
+        background-color: #0a74da;
+        color: #fff;
+      }
+
+      .radio-group input{
+        position: absolute;
+        left: -99999px;
+      }
+      .btn {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #0a74da;
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: #085bb5;
+      }
+
+      .btn-check {
+        padding: 10px 14px;
+        font-size: 13px;
+        margin-top: 5px;
+        border: none;
+        border-radius: 8px;
+        background: #e0f2ff;
+        color: #0a74da;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-check:hover {
+        background: #cce6ff;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
-      <!-- html 코드는 id가 app인 태그안에서 작업 -->
-      <div class="wrap">
-        <div>
-         <button @click="fnBack">뒤로가기</button>
-       </div>
-        <section>
-          <div>
-            <label> <input type="radio" value="P" v-model="athority" />환자 <input type="radio" value="D" v-model="athority" />의사 </label>
+      
+      <div class="join-container">
+            <div class="top-bar">
+              <button class="btn-back" @click="fnBack">
+                <span class="material-symbols-outlined">arrow_back</span>
+              </button>
+              <h1>회원가입</h1>
+            </div>
+
+        <div class="form-group radio-group">
+          <label for="athority-p">
+            <input type="radio" id="athority-p" value="P" v-model="athority" />
+            <span> 환자</span> 
+          </label>
+          <label for="athority-d">
+            <input type="radio" id="athority-d" value="D" v-model="athority" />
+            <span>의사</span> 
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>아이디</label>
+          <div class="inline-group">
+            <input type="text" v-model="userId" placeholder="아이디 입력" />
+            <button class="btn-check" @click="fnCheck">중복체크</button>
           </div>
-          <div>
-            <label for=""> 아이디: <input type="text" v-model="userId" /> </label>
-            <button @click="fnCheck">중복체크</button>
-          </div>
-          <div>
-            <label for=""> 이메일: <input type="email" v-model="email" /> </label>
-          </div>
-          <div>
-            <label for=""> 비밀번호: <input type="password" v-model="password" /> </label>
-          </div>
-          <div>
-            <label for=""> 비밀번호확인: <input type="password" v-model="checkPwd" /> </label>
-          </div>
-          <div>
-            <label for=""> 이름: <input type="text" v-model="name" /> </label>
-          </div>
-          <div>
-            <label for=""> 생년월일: <input type="date" v-model="birth" /> </label>
-          </div>
-          <div>
-            휴대폰번호:
+        </div>
+
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" v-model="email" placeholder="이메일 입력" />
+        </div>
+
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" v-model="password" placeholder="비밀번호 입력" />
+        </div>
+
+        <div class="form-group">
+          <label>비밀번호 확인</label>
+          <input type="password" v-model="checkPwd" placeholder="비밀번호 다시 입력" />
+        </div>
+
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" v-model="name" placeholder="이름 입력" />
+        </div>
+
+        <div class="form-group">
+          <label>생년월일</label>
+          <input type="date" v-model="birth" />
+        </div>
+
+        <div class="form-group">
+          <label>휴대폰번호</label>
+          <div class="inline-group">
             <select v-model="phone1">
               <option value="010">010</option>
               <option value="011">011</option>
               <option value="012">012</option>
             </select>
-            -
-            <input type="number" v-model="phone2" />
-            -
-            <input type="number" v-model="phone3" />
+            <input type="text" v-model="phone2" placeholder="1234" maxlength="4" oninput="this.value =this.value.replace(/[^0-9.]/g, '')"/>
+            <input type="text" v-model="phone3" placeholder="5678" maxlength="4" oninput="this.value =this.value.replace(/[^0-9.]/g, '')"/>
           </div>
-          <div>
-            <label for=""> 성별: <input type="radio" value="M" v-model="gender" />남자 <input type="radio" value="F" v-model="gender" />여자 </label>
-          </div>
-          <div>
-            <input type="button" value="가입" @click="fnList" />
-          </div>
-        </section>
-      </div>
+        </div>
+
+        <div class="form-group radio-group">
+          <label>
+            <input type="radio" value="M" v-model="gender" /> 
+           <span>남자</span> 
+          </label>
+          <label>
+            <input type="radio" value="F" v-model="gender" /> 
+           <span>여자</span> 
+          </label>
+        </div>
+
+        <button class="btn btn-primary" @click="fnList">가입하기</button>
+    </div>
     </div>
   </body>
 </html>
@@ -71,13 +262,11 @@
   const app = Vue.createApp({
     data() {
       return {
-        // 변수 - (key : value)
         userId: "",
         email: "",
         password: "",
         name: "",
         birth: "",
-        phone: "",
         phone1: "010",
         phone2: "",
         phone3: "",
@@ -89,8 +278,7 @@
       };
     },
     methods: {
-      // 함수(메소드) - (key : function())
-      fnList: function () {
+      fnList() {
         let self = this;
         let param = {
           userId: self.userId,
@@ -102,16 +290,17 @@
           gender: self.gender,
           athority: self.athority,
         };
+
         if (self.athority == "") {
           alert("회원가입 종류를 선택해주세요");
           return;
         }
         if (self.userId == "" || self.userId.length < 4) {
-          alert("아이디는 4자리 이상 입니다.");
+          alert("아이디는 4자리 이상입니다.");
           return;
         }
         if (self.check != true) {
-          alert("아이디 중복체크 확인바랍니다.");
+          alert("아이디 중복체크를 해주세요.");
           return;
         }
         if (self.email == "") {
@@ -119,7 +308,7 @@
           return;
         }
         if (!self.regex.test(self.password)) {
-          alert("비밀번호는 8자리 이상 , 특수문자 1개가 포함되어야합니다.");
+          alert("비밀번호는 8자리 이상, 특수문자 1개 이상 포함해야 합니다.");
           return;
         }
         if (self.password != self.checkPwd) {
@@ -131,11 +320,11 @@
           return;
         }
         if (self.birth == "") {
-          alert("생년월일을 입력해주세요");
+          alert("생년월일을 입력해주세요.");
           return;
         }
-        if (self.phone1 == "" || self.phone2.length < 3 || self.phone3.length < 4) {
-          alert("번호를 다 입력해주세요");
+        if (self.phone2.length < 3 || self.phone3.length < 4) {
+          alert("휴대폰 번호를 올바르게 입력해주세요.");
           return;
         }
 
@@ -144,19 +333,16 @@
           dataType: "json",
           type: "GET",
           data: param,
-          success: function (data) {
-            alert("회원가입성공!");
-            location.href="login.html"
+          success: function () {
+            alert("회원가입 성공!");
+            location.href = "login.html";
           },
         });
-      },
-      fnJoin() {
-        let self = this;
       },
       fnCheck() {
         let self = this;
         if (self.userId == "" || self.userId.length < 4) {
-          alert("아이디는 4자리 이상 입니다.");
+          alert("아이디는 4자리 이상입니다.");
           return;
         }
         $.ajax({
@@ -165,25 +351,19 @@
           type: "GET",
           data: { userId: self.userId },
           success: function (data) {
-            console.log(self.check);
-
             if (data.list.length == 0) {
               self.check = true;
-              alert("사용가능한 아이디입니다.");
+              alert("사용 가능한 아이디입니다.");
             } else {
               self.check = false;
-              alert("사용중인 아이디입니다.");
+              alert("이미 사용 중인 아이디입니다.");
             }
           },
         });
       },
-      fnBack(){
+      fnBack() {
         window.history.back();
-      }
-    }, // methods
-    mounted() {
-      // 처음 시작할 때 실행되는 부분
-      let self = this;
+      },
     },
   });
 

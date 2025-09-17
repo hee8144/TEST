@@ -12,84 +12,153 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="reset.css" />
     <style>
-      table,
-      tr,
+      /* 섹션 카드 느낌 */
+      .section-wrap {
+        background-color: white;
+        padding: 30px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        margin: 40px auto;
+      }
+
+      /* 테이블 디자인 */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
       th,
       td {
-        border: 1px solid black;
-        border-collapse: collapse;
-        padding: 5px 10px;
-        text-align: center;
-      }
-      th {
-        width: 150px;
-        background-color: beige;
-      }
-      td {
-        width: 300px;
         text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid #ddd;
       }
-      .check-btn {
-        margin-left: 15px;
+
+      th {
+        width: 120px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      td input,
+      td select {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+
+      td input[type="radio"] {
+        width: auto;
+        margin-right: 5px;
+      }
+      .phone-cell select,
+      .phone-cell input {
+        width: 60px; /* 앞자리 select */
+        margin-right: 5px;
+        padding: 4px 6px;
+        font-size: 0.9rem;
+      }
+
+      .phone-cell input:last-child {
+        width: 70px; /* 마지막 4자리 */
+      }
+
+      /* 버튼 오른쪽 끝 정렬 */
+      .btn-wrap {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      .btn-wrap button {
+        background-color: #4facfe;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .btn-wrap button:hover {
+        opacity: 0.85;
+      }
+      .backbtn-wrap button {
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        background-color: #f06b6b;
+      }
+
+      .backbtn-wrap button:hover {
+        background-color: #ff4c4c;
       }
     </style>
   </head>
   <body>
     <div id="app">
       <!-- html 코드는 id가 app인 태그안에서 작업 -->
-       <table>
+
+      <div class="section-wrap">
+        <div class="backbtn-wrap">
+          <button @click="fnBack">나가기</button>
+        </div>
+        <table>
           <tr>
             <th>이름</th>
             <td>{{userInfo.NAME}}</td>
           </tr>
-
           <tr>
             <th>아이디</th>
             <td>{{userInfo.USERID}}</td>
           </tr>
-
           <tr>
             <th>비밀번호</th>
-            <td><input type="text" v-model="userInfo.PASSWORD"></td>
+            <td><input type="text" v-model="userInfo.PASSWORD" /></td>
           </tr>
-          
           <tr>
             <th>이메일</th>
-            <td><input type="email" v-model="userInfo.EMAIL"></td>
+            <td><input type="email" v-model="userInfo.EMAIL" /></td>
           </tr>
-
           <tr>
             <th>번호</th>
-            <td>
+            <td class="phone-cell">
               <select v-model="phone1">
                 <option value="010">010</option>
                 <option value="011">011</option>
                 <option value="012">012</option>
               </select>
               -
-              <input type="number" v-model="phone2" maxlength="4"/>
+              <input type="text" v-model="phone2" placeholder="1234" maxlength="4" oninput="this.value =this.value.replace(/[^0-9.]/g, '')"/>
               -
-              <input type="number" v-model="phone3" maxlength="4"/>
+              <input type="text" v-model="phone3" placeholder="5678" maxlength="4" oninput="this.value =this.value.replace(/[^0-9.]/g, '')"/>
             </td>
           </tr>
-
           <tr>
             <th>생일</th>
-            <td><input type="date" v-model="userInfo.BIRTH"></td>
+            <td><input type="date" v-model="userInfo.BIRTH" /></td>
           </tr>
-
           <tr>
             <th>성별</th>
             <td><input type="radio" value="M" v-model="userInfo.GENDER" />남자 <input type="radio" value="F" v-model="userInfo.GENDER" />여자</td>
           </tr>
-
           <tr>
             <th>가입날짜</th>
             <td>{{userInfo.CDATE}}</td>
           </tr>
-       </table>
-
-       <button @click="fnmyPageEdit">수정완료</button>
+        </table>
+        <div class="btn-wrap">
+          <button @click="fnmyPageEdit">수정완료</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>
@@ -99,20 +168,19 @@
     data() {
       return {
         // 변수 - (key : value)
-        userId:"",
-        userInfo:{},
-        phone1:"",
-        phone2:"",
-        phone3:"",
+        userId: "",
+        userInfo: {},
+        phone1: "",
+        phone2: "",
+        phone3: "",
         regex: /^(?=.*[^\w\s])(?=\S{8}).+$/,
-        
       };
     },
     methods: {
       // 함수(메소드) - (key : function())
       fnUserInfo: function () {
         let self = this;
-        let param = {userId : self.userId};
+        let param = { userId: self.userId };
         $.ajax({
           url: "http://localhost:3009/user/list",
           dataType: "json",
@@ -121,24 +189,24 @@
           success: function (data) {
             console.log(data.list[0].PHONE);
             self.userInfo = data.list[0];
-            self.phone1 = data.list[0].PHONE.substr(0,3);
-            self.phone2 = data.list[0].PHONE.substr(4,4);
-            self.phone3 = data.list[0].PHONE.substr(9,4);
+            self.phone1 = data.list[0].PHONE.substr(0, 3);
+            self.phone2 = data.list[0].PHONE.substr(4, 4);
+            self.phone3 = data.list[0].PHONE.substr(9, 4);
           },
         });
       },
-      fnmyPageEdit(){
-         let self = this;
+      fnmyPageEdit() {
+        let self = this;
         let param = {
           userId: self.userId,
-          password:self.userInfo.PASSWORD,
-          email:self.userInfo.EMAIL,
+          password: self.userInfo.PASSWORD,
+          email: self.userInfo.EMAIL,
           phone: `${self.phone1}-${self.phone2}-${self.phone3}`,
-          birth:self.userInfo.BIRTH,
-          gender:self.userInfo.GENDER,
+          birth: self.userInfo.BIRTH,
+          gender: self.userInfo.GENDER,
         };
 
-         if (self.userInfo.EMAIL == "") {
+        if (self.userInfo.EMAIL == "") {
           alert("이메일을 입력해주세요.");
           return;
         }
@@ -170,7 +238,10 @@
             location.reload();
           },
         });
-      }
+      },
+      fnBack() {
+        window.close();
+      },
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분

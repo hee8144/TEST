@@ -1,33 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>병원 예약관리 로그인</title>
     <script
       src="https://code.jquery.com/jquery-3.7.1.js"
       integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
       crossorigin="anonymous"
     ></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=arrow_back" />
     <link rel="stylesheet" href="reset.css" />
-    <style></style>
+    <style>
+      .wrap {
+        background: linear-gradient(135deg, #e0f2ff, #ffffff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+      }
+
+      .top-bar {
+        width: 100%;
+        max-width: 380px;
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 15px;
+      }
+
+      .btn-back {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 8px;
+        background-color: #fff;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-back:hover {
+        background-color: #e0e0e0;
+      }
+
+      .login-container {
+        background-color: #fff;
+        padding: 40px 35px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        width: 380px;
+        text-align: center;
+      }
+
+      .login-container h1 {
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: #0a74da;
+      }
+
+      .input-group {
+        margin-bottom: 18px;
+        text-align: left;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .input-group input {
+        width: calc(100% - 24px);
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        transition: border 0.3s;
+      }
+
+      .input-group input:focus {
+        border: 1px solid #0a74da;
+        box-shadow: 0 0 5px rgba(10, 116, 218, 0.3);
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        background: #0a74da;
+        color: #fff;
+        transition: all 0.3s ease;
+      }
+
+      .btn-login:hover {
+        background: #085bb5;
+      }
+
+      .links {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      .links a {
+        margin: 0 8px;
+        text-decoration: none;
+        color: #0a74da;
+        transition: color 0.3s;
+      }
+
+      .links a:hover {
+        color: #085bb5;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
-      <!-- html 코드는 id가 app인 태그안에서 작업 -->
-       <div>
-         <button @click="fnBack">뒤로가기</button>
-       </div>
-      <div>아이디 : <input type="text" v-model="userId" /></div>
-      <div>비밀번호 : <input type="password" v-model="pwd" /></div>
-      <div>
-        <input type="button" value="로그인" @click="fnLogin" />
-      </div>
-      <div>
-        <a href="join.html">회원가입</a>
-        <a href="javascript:;">비밀번호찾기</a>
-        <a href="javascript:;" @click="fnfindId">아이디찾기</a>
+      <!-- 상단 뒤로가기 버튼 -->
+
+      <div class="wrap">
+        <!-- 로그인 박스 -->
+        <div class="login-container">
+          <div class="top-bar">
+            <button class="btn-back" @click="fnBack">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+          </div>
+
+          <h1>로그인</h1>
+
+          <div class="input-group">
+            <label for="userId">아이디</label>
+            <input type="text" id="userId" v-model="userId" placeholder="아이디 입력" />
+          </div>
+          
+          <div class="input-group">
+            <label for="pwd">비밀번호</label>
+            <input type="password" id="pwd" v-model="pwd" placeholder="비밀번호 입력" />
+          </div>
+          <button class="btn-login" @click="fnLogin">로그인</button>
+
+          <div class="links">
+            <a href="join.html">회원가입</a>
+            <a href="javascript:;" @click="fnfindId">아이디 찾기</a>
+            <a href="javascript:;" @click="fnfindPwd">비밀번호 찾기</a>
+          </div>
+
+        </div>
       </div>
     </div>
   </body>
@@ -37,15 +163,13 @@
   const app = Vue.createApp({
     data() {
       return {
-        // 변수 - (key : value)
         userId: "",
         pwd: "",
         info: {},
       };
     },
     methods: {
-      // 함수(메소드) - (key : function())
-      fnLogin: function () {
+      fnLogin() {
         let self = this;
         let param = {
           userId: self.userId,
@@ -57,33 +181,29 @@
           type: "GET",
           data: param,
           success: function (data) {
-            console.log(data.info);
-            
+            if (!data.info || data.info.length === 0) {
+              alert("아이디 또는 비밀번호가 잘못되었습니다.");
+              return;
+            }
             self.info = data.info[0];
             sessionStorage.setItem("name", self.info.NAME);
             sessionStorage.setItem("athority", self.info.ATHORITY);
             sessionStorage.setItem("userId", self.info.USERID);
-            if (data.info[0] == "") {
-              alert("아이디 또는 비밀번호가 잘못되었습니다");
-            }
-            alert("로그인성공!");
+            alert("로그인 성공!");
             location.href = "main.html";
           },
         });
       },
-      fnBack(){
+      fnBack() {
         window.history.back();
       },
-      fnfindId(){
-        window.open("finduserId.html","findId","width=600px  , height=400px");
+      fnfindId() {
+        window.open("finduserId.html", "findId", "width=600px, height=400px,top=300,left=600");
+      },
+      fnfindPwd(){
+        window.open("finduserPwd.html", "findPwd", "width=600px, height=400px,top=300,left=600");
       }
-    }, // methods
-    mounted() {
-      // 처음 시작할 때 실행되는 부분
-      let self = this;
     },
   });
-
   app.mount("#app");
 </script>
-

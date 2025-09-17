@@ -1,112 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.js"
-      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="reset.css" />
-    <style>
-      .header-wrap {
-        background-color: antiquewhite;
-      }
-      header {
-        max-width: 1140px;
-        line-height: 50px;
-        margin: 0 auto;
-      }
-      header nav ul {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-      }
-      header nav ul li {
-        padding: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="app">
-      <!-- html 코드는 id가 app인 태그안에서 작업 -->
-      <div class="header-wrap">
-       <header>
-          <nav>
-            <ul>
-              <li>
-                <h1><a href="javascript:;">logo</a></h1>
-              </li>
-              <li>
-                <a href="reserve.html">예약하기</a>
-              </li>
-              <li>
-                <a href="checkReserve.html">예약확인</a>
-              </li>
-              <li>
-                <a href="main.html">HOME</a>
-              </li>
-              <li >
-                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
-                <a v-else href="myPage.html">마이페이지</a>
-              </li>
-              <li>
-                <a v-if="userAthority==''" href="login.html">로그인</a>
-                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
-              </li>
-            </ul>
-          </nav>
-        </header>
-      </div>
-    </div>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script
+            src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.js"></script>
+        <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=apikey&libraries=services,clusterer,drawing"></script>
+        <link rel="stylesheet" href="reset.css" />
+        <style>
+            .header-wrap {
+                background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            header {
+                max-width: 1140px;
+                line-height: 50px;
+                margin: 0 auto;
+            }
+            header nav ul {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                margin: 0;
+            }
+            header nav ul li a {
+                color: white;
+                font-weight: 500;
+                transition: 0.3s;
+            }
+            header nav ul li a:hover {
+                text-decoration: underline;
+            }
+            .swiper-container {
+                width: 1140px;
+                height: 600px;
+                position: relative;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <!-- html 코드는 id가 app인 태그안에서 작업 -->
+            <div class="header-wrap">
+                <header>
+                    <nav>
+                        <ul>
+                            <li>
+                                <h1><a href="javascript:;">logo</a></h1>
+                            </li>
+                            <li>
+                                <a href="reserve.html">예약하기</a>
+                            </li>
+                            <li>
+                                <a href="checkReserve.html">예약확인</a>
+                            </li>
+                            <li>
+                                <a href="main.html">HOME</a>
+                            </li>
+                            <li>
+                                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                                <a v-else href="myPage.html">마이페이지</a>
+                            </li>
+                            <li>
+                                <a v-if="userAthority==null" href="login.html">로그인</a>
+                                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <div>
+                <section>
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">슬라이드 1</div>
+                            <div class="swiper-slide">슬라이드 2</div>
+                            <div class="swiper-slide">슬라이드 3</div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </section>
+            </div>
+
+            <div>
+                <h2>찾아오시는길</h2>
+                <div id="map" style="width: 500px; height: 400px"></div>
+            </div>
+
+            <div>
+                <footer></footer>
+            </div>
+        </div>
+    </body>
 </html>
 
 <script>
-  const app = Vue.createApp({
-    data() {
-      return {
-        // 변수 - (key : value)
-        userAthority:"",
-        userName:""
-      };
-    },
-    methods: {
-      // 함수(메소드) - (key : function())
-      fnList: function () {
-        let self = this;
-        let param = {};
-        $.ajax({
-          url: "http://localhost:3009/",
-          dataType: "json",
-          type: "GET",
-          data: param,
-          success: function (data) {},
-        });
-      },
-      fnLogout(){
-        let self = this;
-        sessionStorage.setItem("name","");
-        sessionStorage.setItem("athority","");
-        sessionStorage.setItem("userId","")
-        location.reload();
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                userAthority: "",
+                userName: "",
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnList: function () {
+                let self = this;
+                let param = {};
+                $.ajax({
+                    url: "http://localhost:3009/",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {},
+                });
+            },
+            fnLogout() {
+                sessionStorage.clear();
+                location.reload();
+            },
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            self.userAthority = sessionStorage.getItem("athority");
+            self.userName = sessionStorage.getItem("name");
+            const swiper = new Swiper(".swiper-container", {
+                // 기본 옵션 설정
+                loop: true, // 반복
+                autoplay: {
+                    delay: 2500,
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                centeredSlides: true,
+            });
+            var container = document.getElementById("map"); //지도를 담을 영역의 DOM 레퍼런스
 
-      }
-    }, // methods
-    mounted() {
-      // 처음 시작할 때 실행되는 부분
-      let self = this;
-      self.userAthority = sessionStorage.getItem("athority");
-      self.userName = sessionStorage.getItem("name");
-      
-      if (self.userName != null && self.userName !="") {
-        alert(`${self.userName} 님 환영합니다.`);
-      }
-    },
-  });
+            window.onload = function () {
+                var container = document.getElementById("map"); // 지도를 표시할 div
+                var options = {
+                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                    level: 3, // 확대 레벨
+                };
 
-  app.mount("#app");
+                var map = new kakao.maps.Map(container, options); // 지도 생성
+                var geocoder = new kakao.maps.services.Geocoder();
+
+                // 주소로 좌표를 검색합니다
+                geocoder.addressSearch("인천광역시 부평구 부평1동 534-48 ", function (result, status) {
+                    // 정상적으로 검색이 완료됐으면
+                    if (status === kakao.maps.services.Status.OK) {
+                        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                        // 결과값으로 받은 위치를 마커로 표시합니다
+                        var marker = new kakao.maps.Marker({
+                            map: map,
+                            position: coords,
+                        });
+
+                        // 인포윈도우로 장소에 대한 설명을 표시합니다
+                        var infowindow = new kakao.maps.InfoWindow({
+                            content: '<div style="width:150px;text-align:center;padding:6px 0;">위치</div>',
+                        });
+                        infowindow.open(map, marker);
+
+                        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                        map.setCenter(coords);
+                    }
+                });
+            };
+
+            if (self.userName != null && self.userName != "") {
+                alert(`${self.userName} 님 환영합니다.`);
+            }
+        },
+    });
+
+    app.mount("#app");
 </script>

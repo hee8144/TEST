@@ -13,13 +13,13 @@
     <link rel="stylesheet" href="reset.css" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
     <style>
-      #calendar {
-        max-width: 800px;
-        height: 600px;
-        margin: 0 auto;
+      #app{
+        height: 100vh;
       }
       .header-wrap {
-        background-color: antiquewhite;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       }
       header {
         max-width: 1140px;
@@ -29,17 +29,64 @@
       header nav ul {
         display: flex;
         justify-content: space-between;
-        padding: 10px;
+        align-items: center;
+        padding: 15px;
       }
-      header nav ul li {
-        padding: 10px;
+      header nav ul li a {
+        color: white;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+      header nav ul li a:hover {
+        text-decoration: underline;
+      }
+
+      #calendar {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      }
+
+      .fc .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+      }
+      .fc .fc-button {
+        background: #4facfe;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+      .fc .fc-button:hover {
+        background: #00c6ff;
+      }
+
+      .fc-event {
+        border-radius: 8px;
+        font-size: 0.85rem;
+        padding: 2px 6px;
+        border: none ;
+      }
+      .fc-event:hover {
+        opacity: 0.8;
+      }
+
+      .fc-event.my-event {
+        background: #4facfe;
+        color: white ;
       }
     </style>
   </head>
   <body>
     <div id="app">
       <div class="header-wrap">
-       <header>
+        <header>
           <nav>
             <ul>
               <li>
@@ -54,12 +101,12 @@
               <li>
                 <a href="main.html">HOME</a>
               </li>
-              <li >
+              <li>
                 <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
                 <a v-else href="myPage.html">마이페이지</a>
               </li>
               <li>
-                <a v-if="userAthority==''" href="login.html">로그인</a>
+                <a v-if="userAthority==null" href="login.html">로그인</a>
                 <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
               </li>
             </ul>
@@ -80,7 +127,7 @@
         // 변수 - (key : value)
         calendar: null,
         userId: "",
-        userAthority:"",
+        userAthority: "",
       };
     },
     methods: {
@@ -105,8 +152,6 @@
           type: "GET",
           data: param,
           success: function (data) {
-            console.log(data.list);
-
             data.list.forEach((ev) => {
               let start = new Date(ev.START_TIME);
               let hour = start.getHours();
@@ -128,19 +173,16 @@
                 borderColor: "white",
                 backgroundColor: bgColor,
                 textColor: txColor,
+                classNames: ev.USERID == self.userId ? ["my-event"] : [],
               });
             });
           },
         });
       },
-      fnLogout(){
-        let self = this;
-        sessionStorage.setItem("name","");
-        sessionStorage.setItem("athority","");
-        sessionStorage.setItem("userId","")
-        location.reload();
-
-      }
+      fnLogout() {
+        sessionStorage.clear();
+        location.href = "main.html";
+      },
     }, // methods
     mounted() {
       // 처음 시작할 때 실행되는 부분
@@ -155,13 +197,14 @@
           weekends: false,
           displayEventTime: false,
           dateClick(info) {
-            window.open(`reserve-view.html?date=${info.dateStr}`, "reserve", "width=800,height=400");
+            window.open(`reserve-view.html?date=${info.dateStr}`, "reserve", "width=800,height=650,top=200px , left=600px");
           },
         });
-
+        
         self.calendar.render();
         self.fnReserveList();
       });
+      
     },
   });
 
