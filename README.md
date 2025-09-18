@@ -41,6 +41,8 @@
 
 + 5.메인페이지
 
+  ![메인페이지](https://github.com/hee8144/image/blob/main/userMain.png)
+  메뉴부분에서는 관리자이면 마이페이지 대신 회원관리 페이지로 바뀝니다.
   메인페이지는 swiper slide 를 사용하여 3개의 이미지를 자동으로 움직이게 구현하였고,
   kakaomap api 를 이용하여 찾아오시는 길을 구현하였습니다.
 
