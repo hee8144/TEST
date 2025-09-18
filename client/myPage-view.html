@@ -12,7 +12,6 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="reset.css" />
     <style>
-      /* 섹션 카드 느낌 */
       .section-wrap {
         background-color: white;
         padding: 30px 20px;
@@ -23,7 +22,6 @@
         margin: 40px auto;
       }
 
-      /* 테이블 디자인 */
       table {
         width: 100%;
         border-collapse: collapse;
@@ -48,7 +46,6 @@
         padding: 6px 10px;
         border: 1px solid #ccc;
         border-radius: 6px;
-        font-size: 0.95rem;
       }
 
       td input[type="radio"] {
@@ -57,17 +54,15 @@
       }
       .phone-cell select,
       .phone-cell input {
-        width: 60px; /* 앞자리 select */
+        width: 60px;
         margin-right: 5px;
         padding: 4px 6px;
-        font-size: 0.9rem;
       }
 
       .phone-cell input:last-child {
-        width: 70px; /* 마지막 4자리 */
+        width: 70px; 
       }
 
-      /* 버튼 오른쪽 끝 정렬 */
       .btn-wrap {
         display: flex;
         justify-content: flex-end;
@@ -80,7 +75,6 @@
         border: none;
         border-radius: 6px;
         padding: 8px 16px;
-        font-size: 0.95rem;
         cursor: pointer;
         transition: 0.3s;
       }
@@ -174,6 +168,7 @@
         phone2: "",
         phone3: "",
         regex: /^(?=.*[^\w\s])(?=\S{8}).+$/,
+        regexEmail:/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i,
       };
     },
     methods: {
@@ -210,6 +205,10 @@
           alert("이메일을 입력해주세요.");
           return;
         }
+        if(!self.regexEmail.test(self.email)){
+          alert("이메일 형식을 지켜주세요.");
+          return;
+        }
         if (!self.regex.test(self.userInfo.PASSWORD)) {
           alert("비밀번호는 8자리 이상 , 특수문자 1개가 포함되어야합니다.");
           return;
@@ -235,7 +234,7 @@
           success: function (data) {
             alert("수정완료");
             window.close();
-            location.reload();
+            window.opener.location.reload();
           },
         });
       },

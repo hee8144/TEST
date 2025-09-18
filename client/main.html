@@ -1,200 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-        <script
-            src="https://code.jquery.com/jquery-3.7.1.js"
-            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-            crossorigin="anonymous"
-        ></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
-        <script src="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.js"></script>
-        <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=apikey&libraries=services,clusterer,drawing"></script>
-        <link rel="stylesheet" href="reset.css" />
-        <style>
-            .header-wrap {
-                background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-                color: white;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            }
-            header {
-                max-width: 1140px;
-                line-height: 50px;
-                margin: 0 auto;
-            }
-            header nav ul {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 15px;
-                margin: 0;
-            }
-            header nav ul li a {
-                color: white;
-                font-weight: 500;
-                transition: 0.3s;
-            }
-            header nav ul li a:hover {
-                text-decoration: underline;
-            }
-            .swiper-container {
-                width: 1140px;
-                height: 600px;
-                position: relative;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="app">
-            <!-- html 코드는 id가 app인 태그안에서 작업 -->
-            <div class="header-wrap">
-                <header>
-                    <nav>
-                        <ul>
-                            <li>
-                                <h1><a href="javascript:;">logo</a></h1>
-                            </li>
-                            <li>
-                                <a href="reserve.html">예약하기</a>
-                            </li>
-                            <li>
-                                <a href="checkReserve.html">예약확인</a>
-                            </li>
-                            <li>
-                                <a href="main.html">HOME</a>
-                            </li>
-                            <li>
-                                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
-                                <a v-else href="myPage.html">마이페이지</a>
-                            </li>
-                            <li>
-                                <a v-if="userAthority==null" href="login.html">로그인</a>
-                                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </header>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=82a2d2e3883834b8a2b2cf1015b17f3e&libraries=services,clusterer,drawing"
+    ></script>
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: #f9f9f9;
+        margin: 0;
+        color: #333;
+      }
 
-            <div>
-                <section>
-                    <div class="swiper-container">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide">슬라이드 1</div>
-                            <div class="swiper-slide">슬라이드 2</div>
-                            <div class="swiper-slide">슬라이드 3</div>
-                        </div>
-                        <div class="swiper-pagination"></div>
-                        <div class="swiper-button-next"></div>
-                        <div class="swiper-button-prev"></div>
-                    </div>
-                </section>
-            </div>
+      .header-wrap {
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      header {
+        max-width: 1140px;
+        line-height: 50px;
+        margin: 0 auto;
+      }
+      header nav ul {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+      }
+      header nav ul li {
+        margin: 0 12px;
+      }
+      header nav ul li a {
+        color: white;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+      h1 a {
+        font-weight: bold;
+      }
 
-            <div>
-                <h2>찾아오시는길</h2>
-                <div id="map" style="width: 500px; height: 400px"></div>
-            </div>
+      .swiper-container {
+        position: relative;
+        width: 100%;
+        max-width: 1140px;
+        height: 550px;
+        margin: 40px auto;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      .swiper-slide {
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-size: cover;
+        background-position: center;
+      }
+      .swiper-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 15px;
+      }
+      .map-wrap {
+        max-width: 1140px;
+        margin: 60px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .map-wrap h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        border-left: 5px solid #4facfe;
+        padding-left: 10px;
+      }
+      #map {
+        width: 100%;
+        height: 400px;
+        border-radius: 12px;
+      }
+      .map-ex {
+        margin-bottom: 15px;
+      } 
+      .map-ex p{
+        margin-bottom: 15px;
+      }
 
-            <div>
-                <footer></footer>
+
+      footer {
+        background: #333;
+        color: #ccc;
+        text-align: center;
+        padding: 30px 20px;
+        margin-top: 40px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- header -->
+      <div class="header-wrap">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <h1><a href="javascript:;">LOGO</a></h1>
+              </li>
+              <li><a href="reserve.html">예약하기</a></li>
+              <li><a href="checkReserve.html">예약확인</a></li>
+              <li><a href="main.html">HOME</a></li>
+              <li>
+                <a v-if="userAthority =='A'" href="userManagement.html">회원관리</a>
+                <a v-else href="myPage.html">마이페이지</a>
+              </li>
+              <li>
+                <a v-if="userAthority==null" href="login.html">로그인</a>
+                <a v-else href="javascript:;" @click="fnLogout">로그아웃</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+      </div>
+
+      <!-- slide -->
+      <section>
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img src="../image/hospital1.jpg" alt="슬라이드 이미지" />
             </div>
+            <div class="swiper-slide">
+              <img src="../image/hospital2.jpg" alt="슬라이드 이미지2" />
+            </div>
+            <div class="swiper-slide">
+              <img src="../image/hospital3.jpg" alt="슬라이드 이미지" />
+            </div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
         </div>
-    </body>
+      </section>
+
+      <!-- map -->
+      <div class="map-wrap">
+        <h2>찾아오시는 길</h2>
+        <div class="map-ex">
+          <p>주소: 인천광역시 부평구 부평1동 534-48</p>
+          <p>전화: 032-123-4567</p>
+        </div>
+        <div id="map"></div>
+      </div>
+
+      <!-- footer -->
+      <footer>&copy; 2025 병원예약시스템. All Rights Reserved.</footer>
+    </div>
+  </body>
 </html>
 
 <script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                // 변수 - (key : value)
-                userAthority: "",
-                userName: "",
-            };
+  const app = Vue.createApp({
+    data() {
+      return {
+        // 변수 - (key : value)
+        userAthority: "",
+        userName: "",
+      };
+    },
+    methods: {
+      // 함수(메소드) - (key : function())
+      fnList: function () {
+        let self = this;
+        let param = {};
+        $.ajax({
+          url: "http://localhost:3009/",
+          dataType: "json",
+          type: "GET",
+          data: param,
+          success: function (data) {},
+        });
+      },
+      fnLogout() {
+        sessionStorage.clear();
+        location.reload();
+      },
+    }, // methods
+    mounted() {
+      // 처음 시작할 때 실행되는 부분
+      let self = this;
+      self.userAthority = sessionStorage.getItem("athority");
+      self.userName = sessionStorage.getItem("name");
+      const swiper = new Swiper(".swiper-container", {
+        // 기본 옵션 설정
+        loop: true, // 반복
+        autoplay: {
+          delay: 2500,
         },
-        methods: {
-            // 함수(메소드) - (key : function())
-            fnList: function () {
-                let self = this;
-                let param = {};
-                $.ajax({
-                    url: "http://localhost:3009/",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {},
-                });
-            },
-            fnLogout() {
-                sessionStorage.clear();
-                location.reload();
-            },
-        }, // methods
-        mounted() {
-            // 처음 시작할 때 실행되는 부분
-            let self = this;
-            self.userAthority = sessionStorage.getItem("athority");
-            self.userName = sessionStorage.getItem("name");
-            const swiper = new Swiper(".swiper-container", {
-                // 기본 옵션 설정
-                loop: true, // 반복
-                autoplay: {
-                    delay: 2500,
-                },
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev",
-                },
-                centeredSlides: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        centeredSlides: true,
+      });
+      var container = document.getElementById("map"); //지도를 담을 영역의 DOM 레퍼런스
+
+      window.onload = function () {
+        var container = document.getElementById("map"); // 지도를 표시할 div
+        var options = {
+          center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+          level: 3, // 확대 레벨
+        };
+
+        var map = new kakao.maps.Map(container, options); // 지도 생성
+        var geocoder = new kakao.maps.services.Geocoder();
+
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch("인천광역시 부평구 부평1동 534-48 ", function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            var marker = new kakao.maps.Marker({
+              map: map,
+              position: coords,
             });
-            var container = document.getElementById("map"); //지도를 담을 영역의 DOM 레퍼런스
 
-            window.onload = function () {
-                var container = document.getElementById("map"); // 지도를 표시할 div
-                var options = {
-                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                    level: 3, // 확대 레벨
-                };
+            // 인포윈도우로 장소에 대한 설명을 표시합니다
+            var infowindow = new kakao.maps.InfoWindow({
+              content: '<div style="width:150px;text-align:center;padding:6px 0;">위치</div>',
+            });
+            infowindow.open(map, marker);
 
-                var map = new kakao.maps.Map(container, options); // 지도 생성
-                var geocoder = new kakao.maps.services.Geocoder();
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+          }
+        });
+      };
 
-                // 주소로 좌표를 검색합니다
-                geocoder.addressSearch("인천광역시 부평구 부평1동 534-48 ", function (result, status) {
-                    // 정상적으로 검색이 완료됐으면
-                    if (status === kakao.maps.services.Status.OK) {
-                        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+      //   if (self.userName != null && self.userName != "") {
+      //     alert(`${self.userName} 님 환영합니다.`);
+      //   }
+    },
+  });
 
-                        // 결과값으로 받은 위치를 마커로 표시합니다
-                        var marker = new kakao.maps.Marker({
-                            map: map,
-                            position: coords,
-                        });
-
-                        // 인포윈도우로 장소에 대한 설명을 표시합니다
-                        var infowindow = new kakao.maps.InfoWindow({
-                            content: '<div style="width:150px;text-align:center;padding:6px 0;">위치</div>',
-                        });
-                        infowindow.open(map, marker);
-
-                        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                        map.setCenter(coords);
-                    }
-                });
-            };
-
-            if (self.userName != null && self.userName != "") {
-                alert(`${self.userName} 님 환영합니다.`);
-            }
-        },
-    });
-
-    app.mount("#app");
+  app.mount("#app");
 </script>

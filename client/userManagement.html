@@ -215,6 +215,7 @@
             <th>생일</th>
             <th>성별</th>
             <th>가입날짜</th>
+            <th>수정</th>
           </tr>
 
           <tr v-for="item in list">
@@ -229,6 +230,9 @@
             <td>{{item.BIRTH}}</td>
             <td>{{item.GENDER}}</td>
             <td>{{item.CDATE}}</td>
+            <td>
+              <button @click="fnEdit(item.USERID)">수정</button>
+            </td>
           </tr>
         </table>
 
@@ -303,6 +307,9 @@
       },
       fnView(userId, name) {
         window.open(`userManagement-view.html?userId=${userId}&NAME=${name}` , "userView" , "width=800,height=600, top=200px , left=600px");
+      },
+      fnEdit(userId) {
+        window.open("myPage-view.html?userId="+userId, "myPage", "width=680,height=520,top=100,left=100,scrollbars=yes");
       },
       fnLogout() {
         sessionStorage.clear();
